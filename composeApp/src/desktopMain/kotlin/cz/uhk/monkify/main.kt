@@ -2,12 +2,16 @@ package cz.uhk.monkify
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import cz.uhk.monkify.di.initKoin
 
-fun main() = application {
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "MonkifyMultiplatform",
-    ) {
-        App()
+fun main() {
+    initKoin()
+    application {
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "MonkifyMultiplatform",
+        ) {
+            App()
+        }
     }
 }
