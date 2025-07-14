@@ -1,12 +1,12 @@
 package cz.uhk.monkify
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import cz.uhk.monkify.navigation.NavGraph
+import cz.uhk.monkify.theme.MonkifyTheme
 
 @Composable
 fun App() {
-    MaterialTheme {
+    MonkifyTheme {
         NavGraph()
     }
 }
