@@ -20,6 +20,7 @@ trim_trailing_whitespace = true
 # =====================================
 [*.{kt,kts}]
 
+ktlint_disabled_rules = standard:no-wildcard-imports
 indent_style = space
 indent_size = 4
 continuation_indent_size = 4
