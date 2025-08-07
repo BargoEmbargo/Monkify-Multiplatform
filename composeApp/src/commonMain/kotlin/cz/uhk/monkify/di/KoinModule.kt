@@ -1,16 +1,19 @@
 package cz.uhk.monkify.di
 
+import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.screens.HomeViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 expect val platformModule: Module
 
 val sharedModule = module {
-    singleOf(::HomeViewModel)
+    viewModelOf(::HomeViewModel)
+    singleOf(::PreferencesManager)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
