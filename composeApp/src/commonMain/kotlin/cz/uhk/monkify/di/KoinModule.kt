@@ -1,6 +1,7 @@
 package cz.uhk.monkify.di
 
 import cz.uhk.monkify.preferences.PreferencesManager
+import cz.uhk.monkify.repository.DailyTaskRepository
 import cz.uhk.monkify.screens.HomeViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -14,6 +15,7 @@ expect val platformModule: Module
 val sharedModule = module {
     viewModelOf(::HomeViewModel)
     singleOf(::PreferencesManager)
+    single { DailyTaskRepository(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
