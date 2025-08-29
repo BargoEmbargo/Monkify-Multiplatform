@@ -2,7 +2,7 @@ package cz.uhk.monkify.di
 
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
-import cz.uhk.monkify.screens.HomeViewModel
+import cz.uhk.monkify.screens.home.HomeViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf

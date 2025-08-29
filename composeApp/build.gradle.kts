@@ -51,6 +51,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.compose.icons.core)
+            implementation(libs.compose.icons.extended)
 
             // Compottie for Lottie animations
             implementation(libs.compottie)
