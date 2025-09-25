@@ -24,6 +24,8 @@ ksp = "2.2.0-2.0.2"
 sqlite = "2.5.2"
 kermit = "2.0.8"
 icons = "1.7.3"
+gitlive = "2.3.0"
+google-services = "4.4.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -62,6 +64,8 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
+firebase-auth-gitlive = { module = "dev.gitlive:firebase-auth", version.ref = "gitlive" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -71,3 +75,4 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -75,6 +76,9 @@ kotlin {
 
             // Kermit - logging
             implementation(libs.kermit)
+
+            // Firebase
+            implementation(libs.firebase.auth.gitlive)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -1,17 +1,1 @@
-package cz.uhk.monkify
-
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import cz.uhk.monkify.di.initKoin
-
-fun main() {
-    initKoin()
-    application {
-        Window(
-            onCloseRequest = ::exitApplication,
-            title = "MonkifyMultiplatform",
-        ) {
-            App()
-        }
-    }
-}
+package cz.uhk.monkifyimport androidx.compose.ui.window.Windowimport androidx.compose.ui.window.applicationimport cz.uhk.monkify.di.initKoinfun main() {    initKoin()    initializeFirebase()    application {        Window(            onCloseRequest = ::exitApplication,            title = "MonkifyMultiplatform",        ) {            App()        }    }}
