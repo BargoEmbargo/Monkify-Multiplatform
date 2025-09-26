@@ -68,14 +68,14 @@ fun GlassmorpismCard(modifier: Modifier = Modifier, content: @Composable () -> U
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.3f),
-                        Color.White.copy(alpha = 0.35f),
+                        Color.White.copy(alpha = 0.2f),
+                        Color.White.copy(alpha = 0.23f),
                     ),
                     startY = 100.0f,
                     endY = 400.0f,
                 ),
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 20.dp),
     ) {
         content()
     }
@@ -86,7 +86,7 @@ fun GlassmorpismCard(modifier: Modifier = Modifier, content: @Composable () -> U
 private fun GlassmorpismCardPreview() {
     MonkifyTheme {
         GlassmorpismCard {
-            Box(modifier = Modifier.size(200.dp)){
+            Box(modifier = Modifier.size(200.dp)) {
                 Text("Glassmorphism Card", modifier = Modifier.padding(16.dp))
             }
         }

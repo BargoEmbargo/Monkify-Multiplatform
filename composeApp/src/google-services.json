@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1068020527391",
+    "project_id": "monkify-multiplatform",
+    "storage_bucket": "monkify-multiplatform.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068020527391:android:e6f69b0b4ec6aa7c25002a",
+        "android_client_info": {
+          "package_name": "cz.uhk.monkify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068020527391-f30tjmlja1d98h0fvtplkhrcnm8jlo2d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cz.uhk.monkify",
+            "certificate_hash": "a1aaeba97d319d41f4c5268065f0687a2f7c8504"
+          }
+        },
+        {
+          "client_id": "1068020527391-sllb3v4q31munvvdnl4ond9td14keokl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBub3KWITeNz09DYvmn3YfxVk7sIb2rKY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068020527391-sllb3v4q31munvvdnl4ond9td14keokl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1068020527391-88ip0f25iitqagmb8n3dl3pv766so5ar.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "cz.uhk.monkify"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
