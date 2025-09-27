@@ -1,6 +1,10 @@
 package cz.uhk.monkify.screens.auth
 
 import androidx.lifecycle.ViewModel
+import co.touchlab.kermit.Severity
+import cz.uhk.monkify.preferences.PreferencesManager
+import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +31,8 @@ class AuthViewModel :
     ViewModel(),
     KoinComponent {
     private val firebaseAuth: FirebaseAuth by inject()
+    private val preferencesManager: PreferencesManager by inject()
+    private val log = AppLog.logger<AuthViewModel>(level = Severity.Info)
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> get() = _uiState
@@ -36,7 +42,9 @@ class AuthViewModel :
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 firebaseAuth.signInWithEmailAndPassword(email, password)
+                preferencesManager.setValue(PreferencesManager.AUTHENTICATED, true)
                 _uiState.value = AuthUiState(isSuccess = true)
+                log.d { "User signed in" }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(errorMessage = e.message)
             }
@@ -48,7 +56,9 @@ class AuthViewModel :
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
+                preferencesManager.setValue(PreferencesManager.AUTHENTICATED, true)
                 _uiState.value = AuthUiState(isSuccess = true)
+                log.d { "User signed up" }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(errorMessage = e.message)
             }

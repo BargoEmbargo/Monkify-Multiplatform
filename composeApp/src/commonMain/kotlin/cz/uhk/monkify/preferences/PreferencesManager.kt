@@ -32,5 +32,6 @@ class PreferencesManager(private val ds: DataStore<Preferences>) {
 
     companion object Keys {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("ONBOARDING_COMPLETED")
+        val AUTHENTICATED = booleanPreferencesKey("AUTHENTICATED")
     }
 }
