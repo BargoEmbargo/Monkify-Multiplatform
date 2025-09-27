@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
+import cz.uhk.monkify.common.PasswordTextField
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -39,11 +38,13 @@ fun SignUpScreen(
     onSuccess: () -> Unit = {},
     viewModel: AuthViewModel = koinViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     var formState by remember { mutableStateOf(AuthFormState()) }
     var localError by remember { mutableStateOf<String?>(null) }
-    val uiState by viewModel.uiState.collectAsState()
 
-    // If sign-up is successful, call onSuccess
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+
     if (uiState.isSuccess) {
         onSuccess()
         viewModel.clearState()
@@ -62,6 +63,10 @@ fun SignUpScreen(
                 viewModel.signUp(formState.email, formState.password)
             }
         },
+        passwordVisible = passwordVisible,
+        onPasswordVisibilityChange = { passwordVisible = it },
+        confirmPasswordVisible = confirmPasswordVisible,
+        onConfirmPasswordVisibilityChange = { confirmPasswordVisible = it },
     )
 }
 
@@ -72,6 +77,10 @@ fun SignUpScreenContent(
     isLoading: Boolean,
     errorMessage: String?,
     onSignUpClick: () -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibilityChange: (Boolean) -> Unit,
+    confirmPasswordVisible: Boolean,
+    onConfirmPasswordVisibilityChange: (Boolean) -> Unit,
 ) {
     ScreenContentWrapper(
         showScrollbar = false,
@@ -103,33 +112,23 @@ fun SignUpScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading,
                 )
-                OutlinedTextField(
+                PasswordTextField(
                     value = formState.password,
                     onValueChange = { onFormChange(formState.copy(password = it)) },
-                    label = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text("Password")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                    label = "Password",
+                    passwordVisible = passwordVisible,
+                    onPasswordVisibilityChange = onPasswordVisibilityChange,
                     enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth(),
                 )
-                OutlinedTextField(
+                PasswordTextField(
                     value = formState.confirmPassword,
                     onValueChange = { onFormChange(formState.copy(confirmPassword = it)) },
-                    label = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text("Confirm Password")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                    label = "Confirm Password",
+                    passwordVisible = confirmPasswordVisible,
+                    onPasswordVisibilityChange = onConfirmPasswordVisibilityChange,
                     enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -157,6 +156,10 @@ private fun SignUpScreenPreview() {
             isLoading = false,
             errorMessage = null,
             onSignUpClick = {},
+            passwordVisible = false,
+            onPasswordVisibilityChange = {},
+            confirmPasswordVisible = false,
+            onConfirmPasswordVisibilityChange = {},
         )
     }
 }

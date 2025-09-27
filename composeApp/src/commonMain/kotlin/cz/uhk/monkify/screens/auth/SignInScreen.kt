@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
+import cz.uhk.monkify.common.PasswordTextField
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,6 +41,7 @@ fun SignInScreen(
     var formState by remember { mutableStateOf(AuthFormState()) }
     var localError by remember { mutableStateOf<String?>(null) }
     val uiState by viewModel.uiState.collectAsState()
+    var passwordVisible by remember { mutableStateOf(false) }
 
     // If sign-in is successful, call onSuccess
     if (uiState.isSuccess) {
@@ -61,6 +62,8 @@ fun SignInScreen(
                 viewModel.signIn(formState.email, formState.password)
             }
         },
+        passwordVisible = passwordVisible,
+        onPasswordVisibilityChange = { passwordVisible = it }
     )
 }
 
@@ -71,6 +74,8 @@ fun SignInScreenContent(
     isLoading: Boolean,
     errorMessage: String?,
     onSignInClick: () -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibilityChange: (Boolean) -> Unit,
 ) {
     ScreenContentWrapper(
         showScrollbar = false,
@@ -102,19 +107,14 @@ fun SignInScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading,
                 )
-                OutlinedTextField(
+                PasswordTextField(
                     value = formState.password,
                     onValueChange = { onFormChange(formState.copy(password = it)) },
-                    label = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text("Password")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                    label = "Password",
+                    passwordVisible = passwordVisible,
+                    onPasswordVisibilityChange = onPasswordVisibilityChange,
                     enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -142,6 +142,8 @@ private fun SignInScreenPreview() {
             isLoading = false,
             errorMessage = null,
             onSignInClick = {},
+            passwordVisible = false,
+            onPasswordVisibilityChange = {}
         )
     }
 }
