@@ -6,4 +6,5 @@ enum class NavigationGraph {
     AuthScreen,
     SignInScreen,
     SignUpScreen,
+    OnboardingScreen,
 }

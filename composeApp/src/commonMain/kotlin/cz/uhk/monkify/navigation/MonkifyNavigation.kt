@@ -12,6 +12,7 @@ import cz.uhk.monkify.screens.auth.AuthScreen
 import cz.uhk.monkify.screens.auth.SignInScreen
 import cz.uhk.monkify.screens.auth.SignUpScreen
 import cz.uhk.monkify.screens.home.HomeScreen
+import cz.uhk.monkify.screens.onboarding.OnboardingScreen
 import cz.uhk.monkify.screens.plan.PlanScreen
 
 @Composable
@@ -19,6 +20,7 @@ fun MonkifyNavigation(
     navController: NavHostController,
     showBottomBar: Boolean,
     startDestination: String,
+    onOnboardingFinish: () -> Unit,
 ) {
     Scaffold(
         bottomBar = {
@@ -59,6 +61,11 @@ fun MonkifyNavigation(
                             popUpTo(NavigationGraph.AuthScreen.name) { inclusive = true }
                         }
                     },
+                )
+            }
+            composable(NavigationGraph.OnboardingScreen.name) {
+                OnboardingScreen(
+                    onFinish = { onOnboardingFinish() },
                 )
             }
         }

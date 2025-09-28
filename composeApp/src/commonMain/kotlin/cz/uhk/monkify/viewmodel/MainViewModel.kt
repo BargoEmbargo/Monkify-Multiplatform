@@ -2,6 +2,7 @@ package cz.uhk.monkify.viewmodel
 
 import androidx.lifecycle.ViewModel
 import co.touchlab.kermit.Severity
+import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
@@ -18,10 +19,16 @@ import org.koin.core.component.inject
 class MainViewModel :
     ViewModel(),
     KoinComponent {
+    private val log = AppLog.logger<MainViewModel>(level = Severity.Info)
+
     private val firebaseAuth: FirebaseAuth by inject()
-    private val log = AppLog.logger<MainViewModel>(level = Severity.Debug)
+    private val preferences: PreferencesManager by inject()
+
     private val _isAuthenticated = MutableStateFlow<Boolean?>(null)
     val isAuthenticated: StateFlow<Boolean?> = _isAuthenticated.asStateFlow()
+
+    private val _onboardingCompleted = MutableStateFlow<Boolean?>(null)
+    val onboardingCompleted: StateFlow<Boolean?> = _onboardingCompleted.asStateFlow()
 
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -29,9 +36,20 @@ class MainViewModel :
         viewModelScope.launch {
             _isAuthenticated.value = firebaseAuth.currentUser != null
             firebaseAuth.authStateChanged.collectLatest { user ->
-                log.d { "User changed ${user?.uid}" }
+                log.i { "User changed ${user?.uid}" }
                 _isAuthenticated.value = user != null
             }
+        }
+        viewModelScope.launch {
+            preferences.getValue(PreferencesManager.ONBOARDING_COMPLETED, false).collectLatest { completed ->
+                _onboardingCompleted.value = completed
+            }
+        }
+    }
+
+    fun setOnboardingCompleted() {
+        viewModelScope.launch {
+            preferences.setValue(PreferencesManager.ONBOARDING_COMPLETED, true)
         }
     }
 }

@@ -31,20 +31,36 @@ fun App() {
         )
         val showBottomBar = currentDestination?.route in bottomBarRoutes
         val isAuthenticated by mainViewModel.isAuthenticated.collectAsState(initial = null)
+        val onboardingCompleted by mainViewModel.onboardingCompleted.collectAsState(initial = null)
 
-        if (isAuthenticated == null) {
-            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        if (onboardingCompleted == null || isAuthenticated == null) {
+            Box(
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
         } else {
-            val startDestination = if (isAuthenticated == true) {
-                NavigationGraph.HomeScreen.name
-            } else {
-                NavigationGraph.AuthScreen.name
+            val startDestination = when {
+                onboardingCompleted == false -> NavigationGraph.OnboardingScreen.name
+                isAuthenticated == true -> NavigationGraph.HomeScreen.name
+                else -> NavigationGraph.AuthScreen.name
             }
 
             MonkifyNavigation(
                 navController = navController,
                 showBottomBar = showBottomBar,
                 startDestination = startDestination,
+                onOnboardingFinish = {
+                    mainViewModel.setOnboardingCompleted()
+                    if (mainViewModel.isAuthenticated.value == true) {
+                        navController.navigate(NavigationGraph.HomeScreen.name) {
+                            popUpTo(NavigationGraph.OnboardingScreen.name) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(NavigationGraph.AuthScreen.name)
+                    }
+                },
             )
         }
     }
