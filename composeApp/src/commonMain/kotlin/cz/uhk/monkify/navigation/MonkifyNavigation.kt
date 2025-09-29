@@ -14,6 +14,7 @@ import cz.uhk.monkify.screens.auth.SignUpScreen
 import cz.uhk.monkify.screens.home.HomeScreen
 import cz.uhk.monkify.screens.onboarding.OnboardingScreen
 import cz.uhk.monkify.screens.plan.PlanScreen
+import cz.uhk.monkify.screens.task.TaskScreen
 
 @Composable
 fun MonkifyNavigation(
@@ -67,6 +68,9 @@ fun MonkifyNavigation(
                 OnboardingScreen(
                     onFinish = { onOnboardingFinish() },
                 )
+            }
+            composable(NavigationGraph.TaskScreen.name) {
+                TaskScreen(navController)
             }
         }
     }

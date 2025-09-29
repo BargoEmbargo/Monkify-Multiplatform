@@ -7,4 +7,5 @@ enum class NavigationGraph {
     SignInScreen,
     SignUpScreen,
     OnboardingScreen,
+    TaskScreen,
 }

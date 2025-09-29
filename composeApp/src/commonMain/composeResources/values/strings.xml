@@ -8,4 +8,20 @@
     <string name="onboarding_back">Back</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_finish">Finish</string>
+    <string name="category_exercise">Exercise</string>
+    <string name="category_studying">Studying</string>
+    <string name="category_running">Running</string>
+    <string name="category_meditating">Meditating</string>
+    <string name="category_skin_care">Skin-Care</string>
+    <string name="category_phone_locked">Phone Restriction</string>
+    <string name="category_reading">Reading</string>
+    <string name="category_riding_bike">Riding a Bike</string>
+    <string name="category_other">Other</string>
+    <string name="choose_category">Choose Category…</string>
+    <string name="add_new_task">Add New Task</string>
+    <string name="description">Description</string>
+    <string name="enter_description">Enter the description for the task…</string>
+    <string name="category">Category</string>
+    <string name="add_task">Add Task</string>
+    <string name="delete_plan">Delete Plan</string>
 </resources>
