@@ -3,7 +3,6 @@ package cz.uhk.monkify.screens.auth
 import androidx.lifecycle.ViewModel
 import co.touchlab.kermit.Severity
 import cz.uhk.monkify.preferences.PreferencesManager
-import cz.uhk.monkify.repository.DailyTaskRepository
 import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope

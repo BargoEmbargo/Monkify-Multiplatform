@@ -24,4 +24,15 @@
     <string name="category">Category</string>
     <string name="add_task">Add Task</string>
     <string name="delete_plan">Delete Plan</string>
+    <string name="plan_header">Here is your Plan:</string>
+    <string name="achievement_title">Achievement</string>
+    <string name="achievement_progress">You're making progress! 9 days down, out of 12. You're 72% there!</string>
+    <string name="achievement_days_left">Days left. In order to complete the challenge you have 3 days remaining</string>
+    <string name="daily_goals_header">Daily goals</string>
+    <string name="daily_goals_setup">Set up</string>
+    <string name="empty_no_data">No data...</string>
+    <string name="empty_set_up_goal">Please set up your daily goal</string>
+    <string name="task_checking_title">Task checking</string>
+    <string name="task_checking_message">Don't forget to check your tasks daily or your progress won't be recorded, and you will have to start over again!</string>
+    <string name="task_checking_confirm">I understand</string>
 </resources>

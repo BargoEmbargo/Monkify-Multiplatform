@@ -4,6 +4,7 @@ import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
 import cz.uhk.monkify.screens.auth.AuthViewModel
 import cz.uhk.monkify.screens.home.HomeViewModel
+import cz.uhk.monkify.screens.plan.PlanViewModel
 import cz.uhk.monkify.viewmodel.MainViewModel
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -21,6 +22,7 @@ val sharedModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::AuthViewModel)
     viewModelOf(::MainViewModel)
+    viewModelOf(::PlanViewModel)
     singleOf(::PreferencesManager)
     single<FirebaseAuth> { Firebase.auth }
     single { DailyTaskRepository(get()) }
