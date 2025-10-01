@@ -79,6 +79,9 @@ kotlin {
 
             // Firebase
             implementation(libs.firebase.auth.gitlive)
+
+            // Calendar
+            implementation(libs.calendar)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

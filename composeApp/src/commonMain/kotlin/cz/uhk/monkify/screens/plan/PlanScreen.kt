@@ -32,11 +32,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
+import cz.uhk.monkify.common.HeaderTitle
 import cz.uhk.monkify.common.PieChart
 import cz.uhk.monkify.common.TaskCheckingInfoDialog
 import cz.uhk.monkify.database.model.DailyTask
@@ -79,7 +79,7 @@ private fun PlanScreenContent(
             isScrollable = true,
             showScrollbar = true,
         ) {
-            PlanHeader()
+            HeaderTitle(stringResource(Res.string.plan_header))
             AchievementCard(dailyTasks = dailyTasks)
             DailyGoalsHeader(onSetupClick = { onSetupClick() })
             GlassmorpismCard {
@@ -93,17 +93,6 @@ private fun PlanScreenContent(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PlanHeader() {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(Res.string.plan_header),
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp),
-        )
     }
 }
 
