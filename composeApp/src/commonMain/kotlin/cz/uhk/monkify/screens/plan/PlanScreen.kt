@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
 import cz.uhk.monkify.common.HeaderTitle
 import cz.uhk.monkify.common.PieChart
-import cz.uhk.monkify.common.TaskCheckingInfoDialog
+import cz.uhk.monkify.common.dialogs.TaskCheckingInfoDialog
 import cz.uhk.monkify.database.model.DailyTask
 import cz.uhk.monkify.model.CategoryTask
 import cz.uhk.monkify.navigation.NavigationGraph
@@ -179,10 +179,11 @@ private fun DailyGoalsHeader(onSetupClick: () -> Unit) {
             modifier = Modifier.clickable { onSetupClick() },
         )
     }
-    TaskCheckingInfoDialog(
-        show = showInfoDialog,
-        onDismiss = { showInfoDialog = false },
-    )
+    if (showInfoDialog) {
+        TaskCheckingInfoDialog(
+            onDismiss = { showInfoDialog = false },
+        )
+    }
 }
 
 @Composable
