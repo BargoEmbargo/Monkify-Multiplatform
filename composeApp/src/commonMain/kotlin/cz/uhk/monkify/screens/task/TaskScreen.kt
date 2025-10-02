@@ -23,13 +23,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,9 +42,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.monkify.common.BackTopBar
+import cz.uhk.monkify.common.dialogs.DeleteConfirmationDialog
+import cz.uhk.monkify.database.model.DailyTask
+import cz.uhk.monkify.extension.applyHorizontalScreenPadding
 import cz.uhk.monkify.model.CategoryTask
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
+import cz.uhk.monkify.wrapper.ScreenHorizontalPaddingClass
+import kotlinx.coroutines.launch
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.add_new_task
 import monkifymultiplatform.composeapp.generated.resources.add_task
@@ -49,27 +58,69 @@ import monkifymultiplatform.composeapp.generated.resources.choose_category
 import monkifymultiplatform.composeapp.generated.resources.delete_plan
 import monkifymultiplatform.composeapp.generated.resources.description
 import monkifymultiplatform.composeapp.generated.resources.enter_description
+import monkifymultiplatform.composeapp.generated.resources.snackbar_task_added
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TaskScreen(navController: NavController) {
+fun TaskScreen(navController: NavController, viewModel: TaskViewModel = koinViewModel()) {
+    val dailyTasks by viewModel.dailyTasks.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarMessage = stringResource(Res.string.snackbar_task_added)
+
     TaskScreenContent(
-        onAddTask = {},
-        onDeletePlan = {},
+        onAddTask = { description, category ->
+            if (description.isNotBlank()) {
+                val task = DailyTask(
+                    descriptionText = description,
+                    categoryTask = category.name,
+                )
+                viewModel.upsertInfo(task)
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(snackbarMessage)
+                }
+            }
+        },
+        onDeletePlan = { showDeleteDialog = true },
         onNavigateBack = { navController.popBackStack() },
+        snackbarHostState = snackbarHostState,
+        isTaskListEmpty = dailyTasks.isEmpty(),
     )
+
+    if (showDeleteDialog) {
+        DeleteConfirmationDialog(
+            onConfirm = {
+                viewModel.deleteAllInfo()
+                navController.popBackStack()
+                showDeleteDialog = false
+            },
+            onDismiss = { showDeleteDialog = false },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskScreenContent(
-    onAddTask: () -> Unit,
+    onAddTask: (String, CategoryTask) -> Unit,
     onDeletePlan: () -> Unit,
     onNavigateBack: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    isTaskListEmpty: Boolean,
 ) {
     Scaffold(
         topBar = { BackTopBar(onNavigateBack = onNavigateBack) },
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier
+                    .applyHorizontalScreenPadding(ScreenHorizontalPaddingClass.Half)
+                    .padding(bottom = 56.dp, start = 4.dp, end = 4.dp),
+                hostState = snackbarHostState,
+            )
+        },
     ) { paddingValues ->
         ScreenContentWrapper(modifier = Modifier.padding(paddingValues)) {
             var description by rememberSaveable { mutableStateOf("") }
@@ -90,8 +141,10 @@ private fun TaskScreenContent(
             }
             TaskActionButtons(
                 description = description,
+                category = category,
                 onAddTask = onAddTask,
                 onDeletePlan = onDeletePlan,
+                isTaskListEmpty = isTaskListEmpty,
             )
         }
     }
@@ -189,8 +242,10 @@ private fun CategoryDropdown(
 @Composable
 private fun TaskActionButtons(
     description: String,
-    onAddTask: () -> Unit,
+    category: CategoryTask,
+    onAddTask: (String, CategoryTask) -> Unit,
     onDeletePlan: () -> Unit,
+    isTaskListEmpty: Boolean,
 ) {
     Row(
         modifier = Modifier.fillMaxSize(),
@@ -199,11 +254,11 @@ private fun TaskActionButtons(
     ) {
         Button(
             modifier = Modifier.weight(1f).height(56.dp),
-            onClick = { onAddTask() },
+            onClick = { onAddTask(description, category) },
             shape = MaterialTheme.shapes.small,
             enabled = description.isNotBlank(),
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
+            Icon(Icons.Default.Add, contentDescription = Icons.Default.Add.name)
             Spacer(Modifier.width(8.dp))
             Text(stringResource(Res.string.add_task))
         }
@@ -216,8 +271,9 @@ private fun TaskActionButtons(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
             ),
+            enabled = !isTaskListEmpty,
         ) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+            Icon(imageVector = Icons.Default.Delete, contentDescription = Icons.Default.Delete.name)
             Spacer(Modifier.width(8.dp))
             Text(stringResource(Res.string.delete_plan))
         }
@@ -228,6 +284,12 @@ private fun TaskActionButtons(
 @Preview
 private fun TaskScreenContentPreview() {
     MonkifyTheme {
-        TaskScreenContent(onAddTask = {}, onDeletePlan = {}, onNavigateBack = {})
+        TaskScreenContent(
+            onAddTask = { _, _ -> },
+            onDeletePlan = {},
+            onNavigateBack = {},
+            snackbarHostState = SnackbarHostState(),
+            isTaskListEmpty = false,
+        )
     }
 }
