@@ -27,10 +27,10 @@
     <string name="delete_plan">Delete Plan</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
-    <string name="plan_header">Here is your Plan:</string>
+    <string name="plan_header">Here is your daily Plan:</string>
     <string name="achievement_title">Achievement</string>
-    <string name="achievement_progress">You're making progress! 9 days down, out of 12. You're 72% there!</string>
-    <string name="achievement_days_left">Days left. In order to complete the challenge you have 3 days remaining</string>
+    <string name="achievement_progress">You have completed %1$d tasks, out of %2$d. You are %3$d% there!</string>
+    <string name="achievement_days_left">Tasks left. In order to complete the daily challenge you have %1$d tasks remaining</string>
     <string name="daily_goals_header">Daily goals</string>
     <string name="daily_goals_setup">Set up</string>
     <string name="empty_no_data">No data...</string>

@@ -8,10 +8,13 @@ import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
 import cz.uhk.monkify.util.AppLog
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PlanViewModel(private val repository: DailyTaskRepository, private val preferencesManager: PreferencesManager) : ViewModel() {
@@ -19,6 +22,17 @@ class PlanViewModel(private val repository: DailyTaskRepository, private val pre
 
     private val _dailyTasks = MutableStateFlow<List<DailyTask>>(emptyList())
     val dailyTasks: StateFlow<List<DailyTask>> = _dailyTasks.asStateFlow()
+
+    val achievementProgress: StateFlow<AchievementProgress> = _dailyTasks
+        .map { tasks ->
+            val completed = tasks.count { it.isChecked }
+            val total = tasks.size
+            val uncompleted = total - completed
+            val percent = if (total > 0) (completed * 100 / total) else 0
+            val pieData = listOf(completed, uncompleted)
+            AchievementProgress(completed, total, uncompleted, percent, pieData)
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AchievementProgress(0, 0, 0, 0, listOf(0, 0)))
 
     init {
 //        // THIS IS ONLY FOR TESTING, RESET DAYS COMPLETED TO 0!

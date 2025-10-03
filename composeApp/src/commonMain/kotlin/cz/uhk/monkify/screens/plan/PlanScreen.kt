@@ -60,17 +60,20 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinViewModel()) {
     val dailyTasks by viewModel.dailyTasks.collectAsState()
+    val achievementProgress by viewModel.achievementProgress.collectAsState()
     PlanScreenContent(
         onSetupClick = { navController.navigate(NavigationGraph.TaskScreen.name) },
         onCheckedChange = { id -> viewModel.toggleTaskChecked(id) },
         onRowClick = { id -> navController.navigate(NavigationGraph.TaskScreen.name + "?taskId=$id") },
         dailyTasks = dailyTasks,
+        achievementProgress = achievementProgress,
     )
 }
 
 @Composable
 private fun PlanScreenContent(
     dailyTasks: List<DailyTask>,
+    achievementProgress: AchievementProgress,
     onSetupClick: () -> Unit,
     onCheckedChange: (Int) -> Unit,
     onRowClick: (Int) -> Unit,
@@ -82,7 +85,7 @@ private fun PlanScreenContent(
             showScrollbar = true,
         ) {
             HeaderTitle(stringResource(Res.string.plan_header))
-            AchievementCard(dailyTasks = dailyTasks)
+            AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
             DailyGoalsHeader(onSetupClick = { onSetupClick() })
             GlassmorpismCard {
                 if (dailyTasks.isEmpty()) {
@@ -100,10 +103,10 @@ private fun PlanScreenContent(
 }
 
 @Composable
-private fun AchievementCard(dailyTasks: List<DailyTask>) {
+private fun AchievementCard(achievementProgress: AchievementProgress, dailyTasksEmpty: Boolean) {
     val isPreview = LocalInspectionMode.current
     GlassmorpismCard {
-        if (dailyTasks.isEmpty()) {
+        if (dailyTasksEmpty) {
             EmptyText(text = stringResource(Res.string.empty_no_data))
         } else {
             Column {
@@ -118,18 +121,26 @@ private fun AchievementCard(dailyTasks: List<DailyTask>) {
                     Column(modifier = Modifier.weight(0.4f)) {
                         AchievementLegend(
                             color = MaterialTheme.colorScheme.primaryContainer,
-                            text = stringResource(Res.string.achievement_progress),
+                            text = stringResource(
+                                Res.string.achievement_progress,
+                                achievementProgress.completed,
+                                achievementProgress.total,
+                                achievementProgress.percent,
+                            ),
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         AchievementLegend(
                             color = MaterialTheme.colorScheme.secondary,
-                            text = stringResource(Res.string.achievement_days_left),
+                            text = stringResource(
+                                Res.string.achievement_days_left,
+                                achievementProgress.uncompleted,
+                            ),
                         )
                     }
 
                     PieChart(
                         modifier = Modifier.padding(end = 6.dp, bottom = 6.dp),
-                        data = mapOf("Progress" to 9, "Left" to 3),
+                        data = achievementProgress.pieData,
                         progressOverride = if (isPreview) 1f else null,
                     )
                 }
@@ -284,6 +295,7 @@ private fun PlanScreenPreview() {
                 DailyTask(4, false, "Lock phone for 1 hour", "PhoneLocked"),
                 DailyTask(5, false, "Go for a bike ride", "RidingBike"),
             ),
+            achievementProgress = AchievementProgress(1, 5, 4, 20, listOf(1, 4)),
             onCheckedChange = {},
             onRowClick = {},
         )
@@ -297,6 +309,7 @@ private fun PlanScreenEmptyPreview() {
         PlanScreenContent(
             onSetupClick = {},
             dailyTasks = emptyList(),
+            achievementProgress = AchievementProgress(0, 0, 0, 0, listOf(0, 0)),
             onCheckedChange = {},
             onRowClick = {},
         )

@@ -30,20 +30,43 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PieChart(
-    data: Map<String, Int>,
+    data: List<Int>, // [completed, uncompleted]
     modifier: Modifier = Modifier,
     radiusOuter: Dp = 48.dp,
     chartBarWidth: Dp = 13.dp,
     animDuration: Int = 1000,
-    primaryColor: Color = MaterialTheme.colorScheme.primaryContainer,
-    secondaryColor: Color = MaterialTheme.colorScheme.secondary,
+    completedColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    uncompletedColor: Color = MaterialTheme.colorScheme.secondary,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    progressOverride: Float? = null, // Added this for preview/testing(set to 1f)
+    progressOverride: Float? = null, // For preview/testing
 ) {
-    val total = data.values.sum().coerceAtLeast(1)
-    val slices = remember(data) {
-        data.values.map { value -> 360f * value / total.toFloat() }
-    }
+    val completed = data.getOrNull(0) ?: 0
+    val uncompleted = data.getOrNull(1) ?: 0
+    val total = completed + uncompleted
+    val slices = listOfNotNull(
+        if (completed > 0) completed else null,
+        if (uncompleted > 0) uncompleted else null,
+    )
+    val gradients = listOfNotNull(
+        if (completed > 0) {
+            Brush.linearGradient(
+                colors = listOf(completedColor, completedColor.copy(alpha = 0.3f)),
+                start = Offset(100f, 20f),
+                end = Offset(10f, 300f),
+            )
+        } else {
+            null
+        },
+        if (uncompleted > 0) {
+            Brush.linearGradient(
+                colors = listOf(uncompletedColor, uncompletedColor.copy(alpha = 0.3f)),
+                start = Offset(100f, 0f),
+                end = Offset(50f, 300f),
+            )
+        } else {
+            null
+        },
+    )
 
     var started by remember { mutableStateOf(false) }
     val progressAnim by animateFloatAsState(
@@ -57,18 +80,6 @@ fun PieChart(
     )
     LaunchedEffect(Unit) { started = true }
 
-    val gradient1 = Brush.linearGradient(
-        colors = listOf(secondaryColor, secondaryColor.copy(alpha = 0.3f)),
-        start = Offset(100f, 0f),
-        end = Offset(50f, 300f),
-    )
-    val gradient2 = Brush.linearGradient(
-        colors = listOf(primaryColor.copy(alpha = 0.9f), primaryColor.copy(alpha = 0.3f)),
-        start = Offset(100f, 20f),
-        end = Offset(10f, 300f),
-    )
-    val gradients = listOf(gradient1, gradient2)
-
     Box(
         modifier = modifier.size(radiusOuter * 2f),
         contentAlignment = Alignment.Center,
@@ -77,7 +88,8 @@ fun PieChart(
             modifier = Modifier.size(radiusOuter * 2f),
         ) {
             var last = spin % 360f
-            slices.forEachIndexed { index, sweep ->
+            val totalSafe = total.coerceAtLeast(1)
+            slices.map { value -> 360f * value / totalSafe.toFloat() }.forEachIndexed { index, sweep ->
                 drawArc(
                     brush = gradients[index % gradients.size],
                     startAngle = last,
@@ -88,8 +100,7 @@ fun PieChart(
                 last += sweep
             }
         }
-
-        val percentage = (data.values.firstOrNull() ?: 0) * 100 / total
+        val percentage = if (total > 0) (completed * 100 / total) else 0
         Text(
             text = "$percentage%",
             color = textColor,
@@ -103,13 +114,12 @@ fun PieChart(
 fun PieChartPreview() {
     MonkifyTheme {
         Box(
-            modifier = Modifier.size(150.dp)
-                .background(MaterialTheme.colorScheme.background),
+            modifier = Modifier.size(150.dp).background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center,
         ) {
             PieChart(
                 animDuration = 0,
-                data = mapOf("A" to 60, "B" to 40),
+                data = listOf(60, 40),
                 progressOverride = 1f,
             )
         }
