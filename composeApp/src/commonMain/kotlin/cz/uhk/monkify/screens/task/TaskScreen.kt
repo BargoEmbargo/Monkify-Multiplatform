@@ -29,12 +29,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.monkify.common.BackTopBar
 import cz.uhk.monkify.common.dialogs.DeleteConfirmationDialog
-import cz.uhk.monkify.database.model.DailyTask
 import cz.uhk.monkify.extension.applyHorizontalScreenPadding
 import cz.uhk.monkify.model.CategoryTask
 import cz.uhk.monkify.theme.MonkifyTheme
@@ -52,42 +51,55 @@ import cz.uhk.monkify.wrapper.ScreenHorizontalPaddingClass
 import kotlinx.coroutines.launch
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.add_new_task
-import monkifymultiplatform.composeapp.generated.resources.add_task
 import monkifymultiplatform.composeapp.generated.resources.category
 import monkifymultiplatform.composeapp.generated.resources.choose_category
-import monkifymultiplatform.composeapp.generated.resources.delete_plan
 import monkifymultiplatform.composeapp.generated.resources.description
+import monkifymultiplatform.composeapp.generated.resources.edit_task
 import monkifymultiplatform.composeapp.generated.resources.enter_description
 import monkifymultiplatform.composeapp.generated.resources.snackbar_task_added
+import monkifymultiplatform.composeapp.generated.resources.snackbar_task_updated
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TaskScreen(navController: NavController, viewModel: TaskViewModel = koinViewModel()) {
-    val dailyTasks by viewModel.dailyTasks.collectAsState()
+fun TaskScreen(
+    navController: NavController,
+    taskId: Int,
+    viewModel: TaskViewModel = koinViewModel(),
+) {
+    val uiState by viewModel.taskScreenUiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var showDeleteDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val snackbarMessage = stringResource(Res.string.snackbar_task_added)
+    val snackbarMessage = stringResource(if (uiState.isEditMode) Res.string.snackbar_task_updated else Res.string.snackbar_task_added)
+
+    LaunchedEffect(taskId) {
+        // todo dunno if i like this? consider koin injection of viewModel with parameters
+        viewModel.onEvent(TaskUiEvent.LoadForEdit(taskId))
+    }
 
     TaskScreenContent(
-        onAddTask = { description, category ->
-            if (description.isNotBlank()) {
-                val task = DailyTask(
-                    descriptionText = description,
-                    categoryTask = category.name,
-                )
-                viewModel.upsertInfo(task)
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(snackbarMessage)
+        uiState = uiState,
+        onEvent = { event ->
+            viewModel.onEvent(event)
+            when (event) {
+                is TaskUiEvent.AddOrUpdate -> {
+                    coroutineScope.launch { snackbarHostState.showSnackbar(snackbarMessage) }
                 }
+                is TaskUiEvent.DeleteAll -> {
+                    showDeleteDialog = true
+                }
+                is TaskUiEvent.DeleteSingleItem -> {
+                    navController.popBackStack()
+                }
+                is TaskUiEvent.NavigateBack -> {
+                    navController.popBackStack()
+                }
+                else -> {}
             }
         },
-        onDeletePlan = { showDeleteDialog = true },
-        onNavigateBack = { navController.popBackStack() },
         snackbarHostState = snackbarHostState,
-        isTaskListEmpty = dailyTasks.isEmpty(),
     )
 
     if (showDeleteDialog) {
@@ -105,14 +117,13 @@ fun TaskScreen(navController: NavController, viewModel: TaskViewModel = koinView
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskScreenContent(
-    onAddTask: (String, CategoryTask) -> Unit,
-    onDeletePlan: () -> Unit,
-    onNavigateBack: () -> Unit,
+    uiState: TaskScreenUiState,
+    onEvent: (TaskUiEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
-    isTaskListEmpty: Boolean,
 ) {
+    var categoryExpanded by remember { mutableStateOf(false) }
     Scaffold(
-        topBar = { BackTopBar(onNavigateBack = onNavigateBack) },
+        topBar = { BackTopBar(onNavigateBack = { onEvent(TaskUiEvent.NavigateBack) }) },
         snackbarHost = {
             SnackbarHost(
                 modifier = Modifier
@@ -123,41 +134,39 @@ private fun TaskScreenContent(
         },
     ) { paddingValues ->
         ScreenContentWrapper(modifier = Modifier.padding(paddingValues)) {
-            var description by rememberSaveable { mutableStateOf("") }
-            var category by rememberSaveable { mutableStateOf(CategoryTask.Exercise) }
-            var categoryExpanded by remember { mutableStateOf(false) }
-
             Column(modifier = Modifier.fillMaxWidth()) {
-                AddTaskTitle()
+                AddTaskTitle(uiState.isEditMode)
                 Spacer(Modifier.height(16.dp))
-                DescriptionInput(description = description, onDescriptionChange = { description = it })
+                DescriptionInput(
+                    description = uiState.description,
+                    onDescriptionChange = { onEvent(TaskUiEvent.DescriptionChanged(it)) },
+                )
                 Spacer(Modifier.height(16.dp))
                 CategoryDropdown(
-                    category = category,
-                    onCategoryChange = { category = it },
+                    category = uiState.category,
+                    onCategoryChange = { onEvent(TaskUiEvent.CategoryChanged(it)) },
                     expanded = categoryExpanded,
                     onExpandedChange = { categoryExpanded = it },
                 )
             }
             TaskActionButtons(
-                description = description,
-                category = category,
-                onAddTask = onAddTask,
-                onDeletePlan = onDeletePlan,
-                isTaskListEmpty = isTaskListEmpty,
+                isEditMode = uiState.isEditMode,
+                description = uiState.description,
+                onAddOrUpdateTask = { onEvent(TaskUiEvent.AddOrUpdate) },
+                onDelete = { if (uiState.isEditMode) onEvent(TaskUiEvent.DeleteSingleItem) else onEvent(TaskUiEvent.DeleteAll) },
             )
         }
     }
 }
 
 @Composable
-private fun AddTaskTitle() {
+private fun AddTaskTitle(isEditMode: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = stringResource(Res.string.add_new_task),
+            text = stringResource(if (isEditMode) Res.string.edit_task else Res.string.add_new_task),
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
         )
     }
@@ -241,11 +250,10 @@ private fun CategoryDropdown(
 
 @Composable
 private fun TaskActionButtons(
+    isEditMode: Boolean,
     description: String,
-    category: CategoryTask,
-    onAddTask: (String, CategoryTask) -> Unit,
-    onDeletePlan: () -> Unit,
-    isTaskListEmpty: Boolean,
+    onAddOrUpdateTask: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxSize(),
@@ -254,42 +262,59 @@ private fun TaskActionButtons(
     ) {
         Button(
             modifier = Modifier.weight(1f).height(56.dp),
-            onClick = { onAddTask(description, category) },
+            onClick = onAddOrUpdateTask,
             shape = MaterialTheme.shapes.small,
             enabled = description.isNotBlank(),
         ) {
             Icon(Icons.Default.Add, contentDescription = Icons.Default.Add.name)
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(Res.string.add_task))
+            Text(if (isEditMode) "Update" else "Add")
         }
 
         Button(
             modifier = Modifier.weight(1f).height(56.dp),
-            onClick = { onDeletePlan() },
+            onClick = onDelete,
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
             ),
-            enabled = !isTaskListEmpty,
         ) {
             Icon(imageVector = Icons.Default.Delete, contentDescription = Icons.Default.Delete.name)
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(Res.string.delete_plan))
+            Text(if (isEditMode) "Delete" else "Delete All")
         }
     }
 }
 
 @Composable
 @Preview
-private fun TaskScreenContentPreview() {
+private fun TaskScreenAddNewItemPreview() {
     MonkifyTheme {
         TaskScreenContent(
-            onAddTask = { _, _ -> },
-            onDeletePlan = {},
-            onNavigateBack = {},
+            uiState = TaskScreenUiState(
+                description = "",
+                category = CategoryTask.Exercise,
+                isEditMode = false,
+            ),
+            onEvent = {},
             snackbarHostState = SnackbarHostState(),
-            isTaskListEmpty = false,
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun TaskScreenUpdateItemPreview() {
+    MonkifyTheme {
+        TaskScreenContent(
+            uiState = TaskScreenUiState(
+                description = "Read a book",
+                category = CategoryTask.Studying,
+                isEditMode = true,
+            ),
+            onEvent = {},
+            snackbarHostState = SnackbarHostState(),
         )
     }
 }

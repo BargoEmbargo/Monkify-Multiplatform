@@ -5,8 +5,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import cz.uhk.monkify.navigation.bottombar.ui.MonkifyBottomBar
 import cz.uhk.monkify.screens.auth.AuthScreen
 import cz.uhk.monkify.screens.auth.SignInScreen
@@ -69,8 +71,17 @@ fun MonkifyNavigation(
                     onFinish = { onOnboardingFinish() },
                 )
             }
-            composable(NavigationGraph.TaskScreen.name) {
-                TaskScreen(navController)
+            composable(
+                route = NavigationGraph.TaskScreen.name + "?taskId={taskId}",
+                arguments = listOf(
+                    navArgument("taskId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    },
+                ),
+            ) { backStackEntry ->
+                val taskId = backStackEntry.savedStateHandle.get<Int>("taskId") ?: -1
+                TaskScreen(navController, taskId)
             }
         }
     }

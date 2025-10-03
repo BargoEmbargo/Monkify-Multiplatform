@@ -63,6 +63,7 @@ fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinView
     PlanScreenContent(
         onSetupClick = { navController.navigate(NavigationGraph.TaskScreen.name) },
         onCheckedChange = { id -> viewModel.toggleTaskChecked(id) },
+        onRowClick = { id -> navController.navigate(NavigationGraph.TaskScreen.name + "?taskId=$id") },
         dailyTasks = dailyTasks,
     )
 }
@@ -72,6 +73,7 @@ private fun PlanScreenContent(
     dailyTasks: List<DailyTask>,
     onSetupClick: () -> Unit,
     onCheckedChange: (Int) -> Unit,
+    onRowClick: (Int) -> Unit,
 ) {
     Scaffold { paddingValues ->
         ScreenContentWrapper(
@@ -89,6 +91,7 @@ private fun PlanScreenContent(
                     DailyGoalsSection(
                         dailyTasks = dailyTasks,
                         onCheckedChange = onCheckedChange,
+                        onRowClick = onRowClick,
                     )
                 }
             }
@@ -125,7 +128,7 @@ private fun AchievementCard(dailyTasks: List<DailyTask>) {
                     }
 
                     PieChart(
-                        modifier = Modifier.padding(end = 4.dp),
+                        modifier = Modifier.padding(end = 6.dp, bottom = 6.dp),
                         data = mapOf("Progress" to 9, "Left" to 3),
                         progressOverride = if (isPreview) 1f else null,
                     )
@@ -187,7 +190,11 @@ private fun DailyGoalsHeader(onSetupClick: () -> Unit) {
 }
 
 @Composable
-private fun DailyGoalsSection(dailyTasks: List<DailyTask>, onCheckedChange: (Int) -> Unit) {
+private fun DailyGoalsSection(
+    dailyTasks: List<DailyTask>,
+    onCheckedChange: (Int) -> Unit,
+    onRowClick: (Int) -> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -199,6 +206,7 @@ private fun DailyGoalsSection(dailyTasks: List<DailyTask>, onCheckedChange: (Int
                     text = task.descriptionText,
                     checked = task.isChecked,
                     onCheckedChange = { onCheckedChange(task.id) },
+                    onRowClick = { onRowClick(task.id) },
                     category = task.categoryTask,
                 )
             }
@@ -212,10 +220,12 @@ private fun DailyGoalItem(
     text: String,
     checked: Boolean,
     onCheckedChange: () -> Unit,
+    onRowClick: () -> Unit,
     category: String,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clip(MaterialTheme.shapes.medium).clickable(onClick = onRowClick),
     ) {
         Text(
             text = "$number.",
@@ -225,6 +235,7 @@ private fun DailyGoalItem(
         Checkbox(
             checked = checked,
             onCheckedChange = { onCheckedChange() },
+            modifier = Modifier.padding(0.dp),
         )
         Text(
             text = text,
@@ -247,7 +258,7 @@ private fun DailyGoalItem(
 }
 
 @Composable
-private fun EmptyText(text: String = "No data") {
+private fun EmptyText(text: String) {
     Box(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         contentAlignment = Alignment.Center,
@@ -274,6 +285,7 @@ private fun PlanScreenPreview() {
                 DailyTask(5, false, "Go for a bike ride", "RidingBike"),
             ),
             onCheckedChange = {},
+            onRowClick = {},
         )
     }
 }
@@ -286,6 +298,7 @@ private fun PlanScreenEmptyPreview() {
             onSetupClick = {},
             dailyTasks = emptyList(),
             onCheckedChange = {},
+            onRowClick = {},
         )
     }
 }

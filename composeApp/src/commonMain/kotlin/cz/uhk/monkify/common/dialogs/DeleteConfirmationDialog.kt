@@ -7,6 +7,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import cz.uhk.monkify.theme.MonkifyTheme
 import monkifymultiplatform.composeapp.generated.resources.Res
+import monkifymultiplatform.composeapp.generated.resources.cancel
+import monkifymultiplatform.composeapp.generated.resources.delete
 import monkifymultiplatform.composeapp.generated.resources.delete_all_tasks_message
 import monkifymultiplatform.composeapp.generated.resources.delete_all_tasks_title
 import org.jetbrains.compose.resources.stringResource
@@ -21,14 +23,14 @@ fun DeleteConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         confirmButton = {
             TextButton(onClick = onConfirm) {
                 Text(
-                    "Delete",
+                    text = stringResource(Res.string.delete),
                     color = MaterialTheme.colorScheme.error,
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(Res.string.cancel))
             }
         },
     )
