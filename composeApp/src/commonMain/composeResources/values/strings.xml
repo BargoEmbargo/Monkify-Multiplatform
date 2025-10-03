@@ -27,6 +27,7 @@
     <string name="delete_plan">Delete Plan</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="streak_days">Streak Days</string>
     <string name="plan_header">Here is your daily Plan:</string>
     <string name="achievement_title">Achievement</string>
     <string name="achievement_progress">You have completed %1$d tasks, out of %2$d. You are %3$d% there!</string>
@@ -43,4 +44,8 @@
     <string name="snackbar_task_updated">Task updated successfully!</string>
     <string name="delete_all_tasks_title">Delete All Tasks</string>
     <string name="delete_all_tasks_message">Are you sure you want to delete all tasks? This action cannot be undone.</string>
+    <string name="achievement_text_0">Don't worry!&#10;Today is the perfect day to start your streak 💪!</string>
+    <string name="achievement_text_1_7">Keep it up!&#10;You're on a roll 😎!</string>
+    <string name="achievement_text_8_15">Impressive!&#10;You're building a habit 👍.</string>
+    <string name="achievement_text_16_plus">Good job!&#10;This is your longest streak so far 😍.</string>
 </resources>

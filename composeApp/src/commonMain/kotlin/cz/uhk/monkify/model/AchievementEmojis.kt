@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.alexzhirkevich.compottie.Compottie
@@ -21,12 +22,12 @@ enum class AchievementEmojis(val resourcePath: String) {
     Wow("files/wow.json"),
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun DisplayLottieAchievement(emoji: AchievementEmojis, modifier: Modifier = Modifier) {
+fun DisplayLottieAchievement(emoji: AchievementEmojis, modifier: Modifier = Modifier) = key(emoji) {
     val composition by rememberLottieComposition {
-        LottieCompositionSpec.JsonString(
-            Res.readBytes(emoji.resourcePath).decodeToString(),
-        )
+        val json = Res.readBytes(emoji.resourcePath).decodeToString()
+        LottieCompositionSpec.JsonString(json)
     }
 
     Image(

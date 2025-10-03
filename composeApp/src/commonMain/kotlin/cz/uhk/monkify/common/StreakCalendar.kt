@@ -38,10 +38,10 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.OutDateStyle
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
-import com.kizitonwose.calendar.core.minusDays
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusMonths
+import cz.uhk.monkify.screens.home.HomeScreenPreviewData
 import cz.uhk.monkify.theme.MonkifyTheme
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.launch
@@ -211,23 +211,11 @@ private fun DayCell(
 @OptIn(ExperimentalTime::class)
 @Preview
 @Composable
-fun StreakCalendarPreview() {
-    val streakDates = remember {
-        val today = LocalDate.now()
-        val dates = mutableSetOf<LocalDate>()
-        for (i in 0..10) {
-            dates.add(today.minusDays(i.toLong().toInt()))
-        }
-
-        dates.add(today.minusDays(15))
-        dates.add(today.minusDays(20))
-        dates.add(today.minusDays(25))
-        dates
-    }
+private fun StreakCalendarPreview() {
     MonkifyTheme {
         Surface {
             StreakCalendar(
-                streakDates = streakDates,
+                streakDates = HomeScreenPreviewData.previewStreakDates(),
                 startMonth = YearMonth.now().minusMonths(3),
                 endMonth = YearMonth.now().plusMonths(3),
                 modifier = Modifier.fillMaxWidth(),
