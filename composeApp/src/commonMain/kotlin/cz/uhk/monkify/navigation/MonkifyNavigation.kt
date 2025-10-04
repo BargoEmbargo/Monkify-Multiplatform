@@ -6,7 +6,9 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -33,11 +35,28 @@ fun MonkifyNavigation(
     onOnboardingFinish: () -> Unit,
     onLogout: () -> Unit = {},
 ) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val allowDrawerState = rememberUpdatedState(showNavigationBars)
+
+    val drawerState = rememberDrawerState(
+        initialValue = DrawerValue.Closed,
+        confirmStateChange = { newValue ->
+            val allow = allowDrawerState.value
+            allow || newValue == DrawerValue.Closed
+        },
+    )
+
+    // Close drawer when it becomes not allowed ex: after logout to Auth screen
+    LaunchedEffect(showNavigationBars) {
+        if (!showNavigationBars && drawerState.isOpen) {
+            drawerState.close()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = showNavigationBars,
         drawerContent = { ModalDrawerSheetContent(onClick = onLogout) },
     ) {
         Scaffold(

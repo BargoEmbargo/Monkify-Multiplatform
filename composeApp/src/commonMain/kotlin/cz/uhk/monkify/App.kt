@@ -61,6 +61,12 @@ fun App() {
                         navController.navigate(NavigationGraph.AuthScreen.name)
                     }
                 },
+                onLogout = {
+                    mainViewModel.logout()
+                    navController.navigate(NavigationGraph.AuthScreen.name) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
             )
         }
     }

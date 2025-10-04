@@ -52,4 +52,9 @@ class MainViewModel :
             preferences.setValue(PreferencesManager.ONBOARDING_COMPLETED, true)
         }
     }
+    fun logout() {
+        viewModelScope.launch {
+            firebaseAuth.signOut()
+        }
+    }
 }
