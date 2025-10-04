@@ -29,7 +29,7 @@ fun App() {
             NavigationGraph.HomeScreen.name,
             NavigationGraph.PlanScreen.name,
         )
-        val showBottomBar = currentDestination?.route in bottomBarRoutes
+        val showNavigationBars = currentDestination?.route in bottomBarRoutes
         val isAuthenticated by mainViewModel.isAuthenticated.collectAsState(initial = null)
         val onboardingCompleted by mainViewModel.onboardingCompleted.collectAsState(initial = null)
 
@@ -49,7 +49,7 @@ fun App() {
 
             MonkifyNavigation(
                 navController = navController,
-                showBottomBar = showBottomBar,
+                showNavigationBars = showNavigationBars,
                 startDestination = startDestination,
                 onOnboardingFinish = {
                     mainViewModel.setOnboardingCompleted()

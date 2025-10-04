@@ -78,25 +78,22 @@ private fun PlanScreenContent(
     onCheckedChange: (Int) -> Unit,
     onRowClick: (Int) -> Unit,
 ) {
-    Scaffold { paddingValues ->
-        ScreenContentWrapper(
-            modifier = Modifier.padding(paddingValues),
-            isScrollable = true,
-            showScrollbar = true,
-        ) {
-            HeaderTitle(stringResource(Res.string.plan_header))
-            AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
-            DailyGoalsHeader(onSetupClick = { onSetupClick() })
-            GlassmorpismCard {
-                if (dailyTasks.isEmpty()) {
-                    EmptyText(text = stringResource(Res.string.empty_set_up_goal))
-                } else {
-                    DailyGoalsSection(
-                        dailyTasks = dailyTasks,
-                        onCheckedChange = onCheckedChange,
-                        onRowClick = onRowClick,
-                    )
-                }
+    ScreenContentWrapper(
+        isScrollable = true,
+        showScrollbar = true,
+    ) {
+        HeaderTitle(stringResource(Res.string.plan_header))
+        AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
+        DailyGoalsHeader(onSetupClick = { onSetupClick() })
+        GlassmorpismCard {
+            if (dailyTasks.isEmpty()) {
+                EmptyText(text = stringResource(Res.string.empty_set_up_goal))
+            } else {
+                DailyGoalsSection(
+                    dailyTasks = dailyTasks,
+                    onCheckedChange = onCheckedChange,
+                    onRowClick = onRowClick,
+                )
             }
         }
     }
