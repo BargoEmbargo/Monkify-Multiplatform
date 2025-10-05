@@ -6,6 +6,7 @@ import cz.uhk.monkify.screens.auth.AuthViewModel
 import cz.uhk.monkify.screens.home.HomeViewModel
 import cz.uhk.monkify.screens.plan.PlanViewModel
 import cz.uhk.monkify.screens.task.TaskViewModel
+import cz.uhk.monkify.service.StreakManager
 import cz.uhk.monkify.viewmodel.MainViewModel
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -26,6 +27,7 @@ val sharedModule = module {
     viewModelOf(::PlanViewModel)
     viewModelOf(::TaskViewModel)
     singleOf(::PreferencesManager)
+    singleOf(::StreakManager)
     single<FirebaseAuth> { Firebase.auth }
     single { DailyTaskRepository(get()) }
 }

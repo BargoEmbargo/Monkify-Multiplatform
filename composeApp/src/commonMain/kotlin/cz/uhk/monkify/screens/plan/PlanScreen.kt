@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,12 +21,16 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,14 +45,18 @@ import cz.uhk.monkify.common.HeaderTitle
 import cz.uhk.monkify.common.PieChart
 import cz.uhk.monkify.common.dialogs.TaskCheckingInfoDialog
 import cz.uhk.monkify.database.model.DailyTask
+import cz.uhk.monkify.extension.applyHorizontalScreenPadding
 import cz.uhk.monkify.model.CategoryTask
 import cz.uhk.monkify.navigation.NavigationGraph
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
+import cz.uhk.monkify.wrapper.ScreenHorizontalPaddingClass
+import kotlinx.coroutines.launch
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.achievement_days_left
 import monkifymultiplatform.composeapp.generated.resources.achievement_progress
 import monkifymultiplatform.composeapp.generated.resources.achievement_title
+import monkifymultiplatform.composeapp.generated.resources.all_task_completed_message
 import monkifymultiplatform.composeapp.generated.resources.daily_goals_header
 import monkifymultiplatform.composeapp.generated.resources.daily_goals_setup
 import monkifymultiplatform.composeapp.generated.resources.empty_no_data
@@ -61,39 +70,57 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinViewModel()) {
     val dailyTasks by viewModel.dailyTasks.collectAsState()
     val achievementProgress by viewModel.achievementProgress.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarMessage = stringResource(Res.string.all_task_completed_message)
+    val scope = rememberCoroutineScope()
+
     PlanScreenContent(
         onSetupClick = { navController.navigate(NavigationGraph.TaskScreen.name) },
         onCheckedChange = { id -> viewModel.toggleTaskChecked(id) },
         onRowClick = { id -> navController.navigate(NavigationGraph.TaskScreen.name + "?taskId=$id") },
         dailyTasks = dailyTasks,
+        snackbarHostState = snackbarHostState,
         achievementProgress = achievementProgress,
     )
+
+    LaunchedEffect(viewModel.snackbarEvent) {
+        scope.launch {
+            viewModel.snackbarEvent.collect {
+                snackbarHostState.showSnackbar(snackBarMessage)
+            }
+        }
+    }
 }
 
 @Composable
 private fun PlanScreenContent(
     dailyTasks: List<DailyTask>,
+    snackbarHostState: SnackbarHostState,
     achievementProgress: AchievementProgress,
     onSetupClick: () -> Unit,
     onCheckedChange: (Int) -> Unit,
     onRowClick: (Int) -> Unit,
 ) {
-    ScreenContentWrapper(
-        isScrollable = true,
-        showScrollbar = true,
+    Scaffold(
+        snackbarHost = { TopSectionSnackbarHost(snackbarHostState) },
     ) {
-        HeaderTitle(stringResource(Res.string.plan_header))
-        AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
-        DailyGoalsHeader(onSetupClick = { onSetupClick() })
-        GlassmorpismCard {
-            if (dailyTasks.isEmpty()) {
-                EmptyText(text = stringResource(Res.string.empty_set_up_goal))
-            } else {
-                DailyGoalsSection(
-                    dailyTasks = dailyTasks,
-                    onCheckedChange = onCheckedChange,
-                    onRowClick = onRowClick,
-                )
+        ScreenContentWrapper(
+            isScrollable = true,
+            showScrollbar = true,
+        ) {
+            HeaderTitle(stringResource(Res.string.plan_header))
+            AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
+            DailyGoalsHeader(onSetupClick = { onSetupClick() })
+            GlassmorpismCard {
+                if (dailyTasks.isEmpty()) {
+                    EmptyText(text = stringResource(Res.string.empty_set_up_goal))
+                } else {
+                    DailyGoalsSection(
+                        dailyTasks = dailyTasks,
+                        onCheckedChange = onCheckedChange,
+                        onRowClick = onRowClick,
+                    )
+                }
             }
         }
     }
@@ -279,6 +306,20 @@ private fun EmptyText(text: String) {
     }
 }
 
+@Composable
+private fun TopSectionSnackbarHost(snackbarHostState: SnackbarHostState) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .applyHorizontalScreenPadding(ScreenHorizontalPaddingClass.Half)
+                .padding(horizontal = 4.dp)
+                .offset(y = (-8).dp),
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun PlanScreenPreview() {
@@ -295,6 +336,7 @@ private fun PlanScreenPreview() {
             achievementProgress = AchievementProgress(1, 5, 4, 20, listOf(1, 4)),
             onCheckedChange = {},
             onRowClick = {},
+            snackbarHostState = SnackbarHostState(),
         )
     }
 }
@@ -309,6 +351,7 @@ private fun PlanScreenEmptyPreview() {
             achievementProgress = AchievementProgress(0, 0, 0, 0, listOf(0, 0)),
             onCheckedChange = {},
             onRowClick = {},
+            snackbarHostState = SnackbarHostState(),
         )
     }
 }

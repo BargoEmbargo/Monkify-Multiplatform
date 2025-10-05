@@ -6,8 +6,11 @@ import co.touchlab.kermit.Severity
 import cz.uhk.monkify.database.model.DailyTask
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.service.StreakManager
 import cz.uhk.monkify.util.AppLog
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,11 +20,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PlanViewModel(private val repository: DailyTaskRepository, private val preferencesManager: PreferencesManager) : ViewModel() {
+class PlanViewModel(
+    private val repository: DailyTaskRepository,
+    private val preferencesManager: PreferencesManager,
+    private val streakManager: StreakManager,
+) : ViewModel() {
     private val log = AppLog.logger<PlanViewModel>(level = Severity.Info)
 
     private val _dailyTasks = MutableStateFlow<List<DailyTask>>(emptyList())
     val dailyTasks: StateFlow<List<DailyTask>> = _dailyTasks.asStateFlow()
+
+    private val _isLocked = MutableStateFlow(false)
+
+    private val _snackbarEvent = MutableSharedFlow<Unit>()
+    val snackbarEvent: SharedFlow<Unit> = _snackbarEvent
 
     val achievementProgress: StateFlow<AchievementProgress> = _dailyTasks
         .map { tasks ->
@@ -47,25 +59,45 @@ class PlanViewModel(private val repository: DailyTaskRepository, private val pre
         viewModelScope.launch {
             repository.getArticles().collectLatest { tasks ->
                 _dailyTasks.value = tasks
+
+                val allChecked = tasks.isNotEmpty() && tasks.all { it.isChecked }
+                _isLocked.value = allChecked
             }
         }
     }
 
     fun toggleTaskChecked(taskId: Int) {
+        if (_isLocked.value) {
+            emitAllTasksCompletedSnackbar()
+            return
+        }
         val task = _dailyTasks.value.find { it.id == taskId } ?: return
         val updatedTask = task.copy(isChecked = !task.isChecked)
         viewModelScope.launch {
             repository.upsertInfo(updatedTask)
-            // After updating, check if all tasks are checked
             val updatedTasks = _dailyTasks.value.map {
                 if (it.id == taskId) updatedTask else it
             }
             val allChecked = updatedTasks.all { it.isChecked }
-            if (allChecked && updatedTasks.isNotEmpty()) {
-                val current = preferencesManager.getValue(PreferencesManager.DAYS_COMPLETED, 0).first()
-                preferencesManager.setValue(PreferencesManager.DAYS_COMPLETED, current + 1)
-                log.i { "All tasks completed! Incremented DAYS_COMPLETED to ${current + 1}" }
+            if (allChecked) {
+                handleAllTasksChecked(updatedTasks)
             }
+        }
+    }
+
+    private fun emitAllTasksCompletedSnackbar() {
+        viewModelScope.launch {
+            _snackbarEvent.emit(Unit)
+        }
+    }
+
+    private suspend fun handleAllTasksChecked(updatedTasks: List<DailyTask>) {
+        if (updatedTasks.isNotEmpty()) {
+            val current = preferencesManager.getValue(PreferencesManager.DAYS_COMPLETED, 0).first()
+            preferencesManager.setValue(PreferencesManager.DAYS_COMPLETED, current + 1)
+            streakManager.updateActivityDate()
+            log.i { "All tasks completed! Incremented DAYS_COMPLETED to ${current + 1}" }
+            _isLocked.value = true
         }
     }
 }

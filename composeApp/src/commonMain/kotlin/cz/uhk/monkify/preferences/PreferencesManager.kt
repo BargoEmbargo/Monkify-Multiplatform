@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -35,5 +36,7 @@ class PreferencesManager(private val ds: DataStore<Preferences>) {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("ONBOARDING_COMPLETED")
         val AUTHENTICATED = booleanPreferencesKey("AUTHENTICATED")
         val DAYS_COMPLETED = intPreferencesKey("DAYS_COMPLETED")
+        val LAST_ACTIVITY_DATE = stringPreferencesKey("LAST_ACTIVITY_DATE")
+        val LAST_TEST_ACTIVITY_TIMESTAMP = stringPreferencesKey("LAST_TEST_ACTIVITY_TIMESTAMP")
     }
 }

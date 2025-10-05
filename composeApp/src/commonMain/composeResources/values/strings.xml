@@ -51,4 +51,5 @@
     <string name="achievement_text_1_7">Keep it up!&#10;You're on a roll 😎!</string>
     <string name="achievement_text_8_15">Impressive!&#10;You're building a habit 👍.</string>
     <string name="achievement_text_16_plus">Good job!&#10;This is your longest streak so far 😍.</string>
+    <string name="all_task_completed_message">Tasks are completed for today. Come back tomorrow! 🎉</string>
 </resources>
