@@ -13,11 +13,15 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TaskCheckingInfoDialog(onDismiss: () -> Unit) {
+fun InformationDialog(
+    title: String = stringResource(Res.string.task_checking_title),
+    text: String = stringResource(Res.string.task_checking_message),
+    onDismiss: () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(Res.string.task_checking_title)) },
-        text = { Text(text = stringResource(Res.string.task_checking_message)) },
+        title = { Text(text = title) },
+        text = { Text(text = text) },
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(Res.string.task_checking_confirm))
@@ -28,8 +32,8 @@ fun TaskCheckingInfoDialog(onDismiss: () -> Unit) {
 
 @Preview
 @Composable
-private fun TaskCheckingInfoDialogPreview() {
+private fun InformationDialogPreview() {
     MonkifyTheme {
-        TaskCheckingInfoDialog(onDismiss = {})
+        InformationDialog(onDismiss = {})
     }
 }

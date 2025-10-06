@@ -31,10 +31,13 @@ class PlanViewModel(
     val dailyTasks: StateFlow<List<DailyTask>> = _dailyTasks.asStateFlow()
 
     private val _isLocked = MutableStateFlow(false)
+    val isLocked: StateFlow<Boolean> = _isLocked.asStateFlow()
 
     private val _snackbarEvent = MutableSharedFlow<Unit>()
     val snackbarEvent: SharedFlow<Unit> = _snackbarEvent
 
+    private val _showAllTasksCompletedDialog = MutableStateFlow(false)
+    val showAllTasksCompletedDialog: StateFlow<Boolean> = _showAllTasksCompletedDialog.asStateFlow()
     val achievementProgress: StateFlow<AchievementProgress> = _dailyTasks
         .map { tasks ->
             val completed = tasks.count { it.isChecked }
@@ -91,13 +94,18 @@ class PlanViewModel(
         }
     }
 
+    fun resetAllTasksCompletedDialog() {
+        _showAllTasksCompletedDialog.value = false
+    }
+
     private suspend fun handleAllTasksChecked(updatedTasks: List<DailyTask>) {
         if (updatedTasks.isNotEmpty()) {
             val current = preferencesManager.getValue(PreferencesManager.DAYS_COMPLETED, 0).first()
             preferencesManager.setValue(PreferencesManager.DAYS_COMPLETED, current + 1)
             streakManager.updateActivityDate()
-            log.i { "All tasks completed! Incremented DAYS_COMPLETED to ${current + 1}" }
+            log.i { "All tasks completed! Incremented DAYS_COMPLETED to ${current + 1}" }
             _isLocked.value = true
+            _showAllTasksCompletedDialog.value = true
         }
     }
 }

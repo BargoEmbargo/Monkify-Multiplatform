@@ -52,4 +52,5 @@
     <string name="achievement_text_8_15">Impressive!&#10;You're building a habit 👍.</string>
     <string name="achievement_text_16_plus">Good job!&#10;This is your longest streak so far 😍.</string>
     <string name="all_task_completed_message">Tasks are completed for today. Come back tomorrow! 🎉</string>
+    <string name="deny_setup_message">Can't setup daily tasks when all are completed, come back tomorrow.</string>
 </resources>

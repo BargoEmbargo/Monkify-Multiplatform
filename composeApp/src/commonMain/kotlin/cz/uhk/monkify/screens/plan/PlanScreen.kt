@@ -43,7 +43,7 @@ import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
 import cz.uhk.monkify.common.HeaderTitle
 import cz.uhk.monkify.common.PieChart
-import cz.uhk.monkify.common.dialogs.TaskCheckingInfoDialog
+import cz.uhk.monkify.common.dialogs.InformationDialog
 import cz.uhk.monkify.database.model.DailyTask
 import cz.uhk.monkify.extension.applyHorizontalScreenPadding
 import cz.uhk.monkify.model.CategoryTask
@@ -70,25 +70,47 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinViewModel()) {
     val dailyTasks by viewModel.dailyTasks.collectAsState()
     val achievementProgress by viewModel.achievementProgress.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val snackBarMessage = stringResource(Res.string.all_task_completed_message)
+    val isLocked by viewModel.isLocked.collectAsState()
+    val showAllTasksCompletedDialog by viewModel.showAllTasksCompletedDialog.collectAsState()
+    val snackbarUiState = rememberSnackbarUiState()
     val scope = rememberCoroutineScope()
 
     PlanScreenContent(
-        onSetupClick = { navController.navigate(NavigationGraph.TaskScreen.name) },
+        onSetupClick = {
+            if (!isLocked) {
+                navController.navigate(NavigationGraph.TaskScreen.name)
+            } else {
+                snackbarUiState.setupBlockedSnackbar.value = true
+            }
+        },
         onCheckedChange = { id -> viewModel.toggleTaskChecked(id) },
         onRowClick = { id -> navController.navigate(NavigationGraph.TaskScreen.name + "?taskId=$id") },
         dailyTasks = dailyTasks,
-        snackbarHostState = snackbarHostState,
+        snackbarHostState = snackbarUiState.snackbarHostState,
         achievementProgress = achievementProgress,
+        isLocked = isLocked,
     )
 
     LaunchedEffect(viewModel.snackbarEvent) {
         scope.launch {
             viewModel.snackbarEvent.collect {
-                snackbarHostState.showSnackbar(snackBarMessage)
+                snackbarUiState.snackbarHostState.showSnackbar(snackbarUiState.allTaskCompletedMessage)
             }
         }
+    }
+    if (snackbarUiState.setupBlockedSnackbar.value) {
+        LaunchedEffect(Unit) {
+            snackbarUiState.snackbarHostState.showSnackbar(snackbarUiState.setupBlockedMessage)
+            snackbarUiState.setupBlockedSnackbar.value = false
+        }
+    }
+
+    if (showAllTasksCompletedDialog) {
+        InformationDialog(
+            title = stringResource(Res.string.achievement_title),
+            text = stringResource(Res.string.all_task_completed_message),
+            onDismiss = { viewModel.resetAllTasksCompletedDialog() },
+        )
     }
 }
 
@@ -97,6 +119,7 @@ private fun PlanScreenContent(
     dailyTasks: List<DailyTask>,
     snackbarHostState: SnackbarHostState,
     achievementProgress: AchievementProgress,
+    isLocked: Boolean,
     onSetupClick: () -> Unit,
     onCheckedChange: (Int) -> Unit,
     onRowClick: (Int) -> Unit,
@@ -110,7 +133,7 @@ private fun PlanScreenContent(
         ) {
             HeaderTitle(stringResource(Res.string.plan_header))
             AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
-            DailyGoalsHeader(onSetupClick = { onSetupClick() })
+            DailyGoalsHeader(onSetupClick = { onSetupClick() }, isLocked = isLocked)
             GlassmorpismCard {
                 if (dailyTasks.isEmpty()) {
                     EmptyText(text = stringResource(Res.string.empty_set_up_goal))
@@ -183,8 +206,8 @@ private fun AchievementLegend(color: Color, text: String) {
 }
 
 @Composable
-private fun DailyGoalsHeader(onSetupClick: () -> Unit) {
-    var showInfoDialog by remember { mutableStateOf(false) }
+private fun DailyGoalsHeader(onSetupClick: () -> Unit, isLocked: Boolean) {
+    var showInformationDialog by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -200,7 +223,7 @@ private fun DailyGoalsHeader(onSetupClick: () -> Unit) {
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .clickable { showInfoDialog = true },
+                    .clickable { showInformationDialog = true },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -213,13 +236,13 @@ private fun DailyGoalsHeader(onSetupClick: () -> Unit) {
         Text(
             text = stringResource(Res.string.daily_goals_setup),
             style = MaterialTheme.typography.labelLarge.copy(textDecoration = TextDecoration.Underline),
-            color = MaterialTheme.colorScheme.primary,
+            color = if (isLocked) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onSetupClick() },
         )
     }
-    if (showInfoDialog) {
-        TaskCheckingInfoDialog(
-            onDismiss = { showInfoDialog = false },
+    if (showInformationDialog) {
+        InformationDialog(
+            onDismiss = { showInformationDialog = false },
         )
     }
 }
@@ -337,6 +360,7 @@ private fun PlanScreenPreview() {
             onCheckedChange = {},
             onRowClick = {},
             snackbarHostState = SnackbarHostState(),
+            isLocked = false,
         )
     }
 }
@@ -352,6 +376,7 @@ private fun PlanScreenEmptyPreview() {
             onCheckedChange = {},
             onRowClick = {},
             snackbarHostState = SnackbarHostState(),
+            isLocked = false,
         )
     }
 }
