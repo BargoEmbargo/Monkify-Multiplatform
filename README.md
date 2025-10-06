@@ -12,3 +12,18 @@ This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+## Google Ads Integration (iOS)
+
+This project includes Google Ads integration for iOS using Swift Package Manager (no CocoaPods or Objective-C).
+
+📖 **Quick Start**: See [QUICK_START_GOOGLE_ADS.md](QUICK_START_GOOGLE_ADS.md) for step-by-step setup instructions.
+
+📚 **Full Documentation**: See [GOOGLE_ADS_README.md](GOOGLE_ADS_README.md) for architecture details and advanced usage.
+
+### Key Features:
+- ✅ Banner and Interstitial ads support
+- ✅ Platform-specific implementation using expect/actual pattern
+- ✅ Swift integration (no CocoaPods, no Objective-C)
+- ✅ Koin dependency injection ready
+- ✅ Composable UI components included
