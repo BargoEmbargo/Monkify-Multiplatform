@@ -6,6 +6,8 @@ struct iOSApp: App {
     
     init() {
         FirebaseApp.configure()
+        // Initialize Google Ads Manager
+        _ = GoogleAdsManager.shared
     }
     
     var body: some Scene {
