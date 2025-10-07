@@ -137,7 +137,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
     }
 
     companion object {
-        const val DEBUG = false
+        private const val DEBUG = false
         private const val TEST_INTERVAL_SECONDS = 20L
     }
 }

@@ -11,12 +11,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderTitle(text:String) {
+fun HeaderTitle(text: String) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = text,
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(bottom = 12.dp),
         )
     }
 }
