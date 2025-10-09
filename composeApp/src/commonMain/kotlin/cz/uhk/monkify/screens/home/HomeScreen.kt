@@ -11,7 +11,9 @@ import cz.uhk.monkify.common.GlassmorpismCard
 import cz.uhk.monkify.common.HeaderTitle
 import cz.uhk.monkify.common.HomeCardTitle
 import cz.uhk.monkify.common.LoadingScreen
+import cz.uhk.monkify.common.OfflineStatusBanner
 import cz.uhk.monkify.common.StreakCalendar
+import cz.uhk.monkify.connectivity.rememberNetworkMonitor
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
 import kotlin.time.ExperimentalTime
@@ -26,13 +28,30 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinViewModel()) {
     val daysCompleted by viewModel.daysCompleted.collectAsState()
     val streakDates by viewModel.streakDates.collectAsState()
-    daysCompleted?.let { HomeScreeContent(daysCompleted = it, streakDates = streakDates) } ?: LoadingScreen()
+
+    val connection = rememberNetworkMonitor()
+    val isConnected by connection.isConnected.collectAsState()
+
+    daysCompleted?.let {
+        HomeScreeContent(
+            daysCompleted = it,
+            streakDates = streakDates,
+            isConnected = isConnected,
+        )
+    } ?: LoadingScreen()
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-private fun HomeScreeContent(daysCompleted: Int, streakDates: Set<LocalDate>) {
+private fun HomeScreeContent(
+    daysCompleted: Int,
+    streakDates: Set<LocalDate>,
+    isConnected: Boolean,
+) {
     ScreenContentWrapper(isScrollable = true) {
+        if (!isConnected) {
+            OfflineStatusBanner()
+        }
         HeaderTitle(stringResource(Res.string.welcome_back))
         GlassmorpismCard {
             Column {
@@ -50,6 +69,21 @@ private fun HomeScreeContent(daysCompleted: Int, streakDates: Set<LocalDate>) {
 @Composable
 private fun HomeScreeContentPreview() {
     MonkifyTheme {
-        HomeScreeContent(10, HomeScreenPreviewData.previewStreakDates())
+        HomeScreeContent(
+            daysCompleted = 10,
+            streakDates = HomeScreenPreviewData.previewStreakDates(),
+            isConnected = false,
+        )
+    }
+}
+@Preview
+@Composable
+private fun HomeScreeContentNoConnectedPreview() {
+    MonkifyTheme {
+        HomeScreeContent(
+            daysCompleted = 10,
+            streakDates = HomeScreenPreviewData.previewStreakDates(),
+            isConnected = true,
+        )
     }
 }

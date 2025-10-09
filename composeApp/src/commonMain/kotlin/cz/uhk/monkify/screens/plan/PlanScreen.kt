@@ -42,8 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
 import cz.uhk.monkify.common.HeaderTitle
+import cz.uhk.monkify.common.OfflineStatusBanner
 import cz.uhk.monkify.common.PieChart
 import cz.uhk.monkify.common.dialogs.InformationDialog
+import cz.uhk.monkify.connectivity.rememberNetworkMonitor
 import cz.uhk.monkify.database.model.DailyTask
 import cz.uhk.monkify.extension.applyHorizontalScreenPadding
 import cz.uhk.monkify.model.CategoryTask
@@ -61,6 +63,7 @@ import monkifymultiplatform.composeapp.generated.resources.daily_goals_header
 import monkifymultiplatform.composeapp.generated.resources.daily_goals_setup
 import monkifymultiplatform.composeapp.generated.resources.empty_no_data
 import monkifymultiplatform.composeapp.generated.resources.empty_set_up_goal
+import monkifymultiplatform.composeapp.generated.resources.offline_progress_saved_locally
 import monkifymultiplatform.composeapp.generated.resources.plan_header
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -73,6 +76,8 @@ fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinView
     val isLocked by viewModel.isLocked.collectAsState()
     val showAllTasksCompletedDialog by viewModel.showAllTasksCompletedDialog.collectAsState()
     val snackbarUiState = rememberSnackbarUiState()
+    val connection = rememberNetworkMonitor()
+    val isConnected by connection.isConnected.collectAsState()
     val scope = rememberCoroutineScope()
 
     PlanScreenContent(
@@ -83,6 +88,7 @@ fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinView
                 snackbarUiState.setupBlockedSnackbar.value = true
             }
         },
+        isConnected = isConnected,
         onCheckedChange = { id -> viewModel.toggleTaskChecked(id) },
         onRowClick = { id -> navController.navigate(NavigationGraph.TaskScreen.name + "?taskId=$id") },
         dailyTasks = dailyTasks,
@@ -117,6 +123,7 @@ fun PlanScreen(navController: NavController, viewModel: PlanViewModel = koinView
 @Composable
 private fun PlanScreenContent(
     dailyTasks: List<DailyTask>,
+    isConnected: Boolean,
     snackbarHostState: SnackbarHostState,
     achievementProgress: AchievementProgress,
     isLocked: Boolean,
@@ -131,6 +138,9 @@ private fun PlanScreenContent(
             isScrollable = true,
             showScrollbar = true,
         ) {
+            if (!isConnected) {
+                OfflineStatusBanner()
+            }
             HeaderTitle(stringResource(Res.string.plan_header))
             AchievementCard(achievementProgress = achievementProgress, dailyTasksEmpty = dailyTasks.isEmpty())
             DailyGoalsHeader(onSetupClick = { onSetupClick() }, isLocked = isLocked)
@@ -361,6 +371,30 @@ private fun PlanScreenPreview() {
             onRowClick = {},
             snackbarHostState = SnackbarHostState(),
             isLocked = false,
+            isConnected = true,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PlanScreenNotConnectedPreview() {
+    MonkifyTheme {
+        PlanScreenContent(
+            onSetupClick = {},
+            dailyTasks = listOf(
+                DailyTask(1, false, "Meditate for 10 minutes", "Meditating"),
+                DailyTask(2, true, "Read 20 pages of a book", "Studying"),
+                DailyTask(3, false, "Exercise for 30 minutes", "Exercise"),
+                DailyTask(4, false, "Lock phone for 1 hour", "PhoneLocked"),
+                DailyTask(5, false, "Go for a bike ride", "RidingBike"),
+            ),
+            achievementProgress = AchievementProgress(1, 5, 4, 20, listOf(1, 4)),
+            onCheckedChange = {},
+            onRowClick = {},
+            snackbarHostState = SnackbarHostState(),
+            isLocked = false,
+            isConnected = false,
         )
     }
 }
@@ -377,6 +411,7 @@ private fun PlanScreenEmptyPreview() {
             onRowClick = {},
             snackbarHostState = SnackbarHostState(),
             isLocked = false,
+            isConnected = true,
         )
     }
 }
