@@ -15,15 +15,21 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DeleteConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    titleText: String = stringResource(Res.string.delete_all_tasks_title),
+    messageText: String = stringResource(Res.string.delete_all_tasks_message),
+    confirmButtonText: String = stringResource(Res.string.delete)
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(Res.string.delete_all_tasks_title)) },
-        text = { Text(text = stringResource(Res.string.delete_all_tasks_message)) },
+        title = { Text(text = titleText) },
+        text = { Text(text = messageText) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
                 Text(
-                    text = stringResource(Res.string.delete),
+                    text = confirmButtonText,
                     color = MaterialTheme.colorScheme.error,
                 )
             }

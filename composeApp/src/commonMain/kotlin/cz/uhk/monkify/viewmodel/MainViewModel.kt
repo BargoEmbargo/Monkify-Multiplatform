@@ -3,6 +3,7 @@ package cz.uhk.monkify.viewmodel
 import androidx.lifecycle.ViewModel
 import co.touchlab.kermit.Severity
 import cz.uhk.monkify.preferences.PreferencesManager
+import cz.uhk.monkify.repository.DailyTaskRepository
 import cz.uhk.monkify.service.StreakManager
 import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -25,6 +26,7 @@ class MainViewModel :
     private val firebaseAuth: FirebaseAuth by inject()
     private val preferences: PreferencesManager by inject()
     private val streakManager: StreakManager by inject()
+    private val repository: DailyTaskRepository by inject()
 
     private val _isAuthenticated = MutableStateFlow<Boolean?>(null)
     val isAuthenticated: StateFlow<Boolean?> = _isAuthenticated.asStateFlow()
@@ -62,6 +64,13 @@ class MainViewModel :
     fun logout() {
         viewModelScope.launch {
             firebaseAuth.signOut()
+        }
+    }
+
+    fun resetProgress() {
+        viewModelScope.launch {
+            preferences.setValue(PreferencesManager.DAYS_COMPLETED, 0)
+            repository.deleteAllInfo()
         }
     }
 }

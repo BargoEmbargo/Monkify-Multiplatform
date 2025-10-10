@@ -33,7 +33,8 @@ fun MonkifyNavigation(
     showNavigationBars: Boolean,
     startDestination: String,
     onOnboardingFinish: () -> Unit,
-    onLogout: () -> Unit = {},
+    onLogout: () -> Unit,
+    onReset: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -57,7 +58,7 @@ fun MonkifyNavigation(
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = showNavigationBars,
-        drawerContent = { ModalDrawerSheetContent(onClick = onLogout) },
+        drawerContent = { ModalDrawerSheetContent(onLogout = onLogout, onReset = onReset) },
     ) {
         Scaffold(
             bottomBar = {

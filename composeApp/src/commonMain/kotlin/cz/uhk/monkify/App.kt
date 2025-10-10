@@ -67,6 +67,9 @@ fun App() {
                         popUpTo(0) { inclusive = true }
                     }
                 },
+                onReset = {
+                    mainViewModel.resetProgress()
+                },
             )
         }
     }

@@ -1,5 +1,7 @@
 package cz.uhk.monkify.common
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +43,7 @@ fun PrimaryOutlinedButton(
     disabledContentColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
     textStyle: TextStyle = MaterialTheme.typography.labelLarge,
     loading: Boolean = false,
+    contentAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
     val borderColor = if (enabled) contentColor else disabledContentColor
     OutlinedButton(
@@ -54,7 +57,7 @@ fun PrimaryOutlinedButton(
             containerColor = containerColor,
             contentColor = borderColor,
         ),
-        enabled = enabled && !loading, // Disable button when loading
+        enabled = enabled && !loading,
     ) {
         if (loading) {
             CircularProgressIndicator(
@@ -62,17 +65,28 @@ fun PrimaryOutlinedButton(
                 strokeWidth = 2.dp,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .size(24.dp)
+                    .size(24.dp),
             )
         } else {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = contentDescription,
-                    modifier = Modifier.padding(end = iconPadding),
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = when (contentAlignment) {
+                    Alignment.Start -> Arrangement.Start
+                    Alignment.CenterHorizontally -> Arrangement.Center
+                    Alignment.End -> Arrangement.End
+                    else -> Arrangement.Center
+                },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = contentDescription,
+                        modifier = Modifier.padding(end = iconPadding),
+                    )
+                }
+                Text(text, style = textStyle)
             }
-            Text(text, style = textStyle)
         }
     }
 }

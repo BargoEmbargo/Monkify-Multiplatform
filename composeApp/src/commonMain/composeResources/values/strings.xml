@@ -57,4 +57,7 @@
     <string name="check_internet_connection">Please check your connection and try again.</string>
     <string name="try_again">Try again</string>
     <string name="offline_progress_saved_locally">You are offline. Progress will be saved only locally.</string>
+    <string name="reset_progress_title">Reset Progress</string>
+    <string name="reset_progress_message">Are you sure you want to reset your progress? This action cannot be undone.</string>
+    <string name="restart_progress">Restart Progress</string>
 </resources>
