@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.HorizontalDivider
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import cz.uhk.monkify.common.PrimaryOutlinedButton
 import cz.uhk.monkify.common.dialogs.DeleteConfirmationDialog
@@ -34,6 +36,7 @@ import cz.uhk.monkify.util.Constants
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.app_name
 import monkifymultiplatform.composeapp.generated.resources.app_version
+import monkifymultiplatform.composeapp.generated.resources.contact_me
 import monkifymultiplatform.composeapp.generated.resources.log_out
 import monkifymultiplatform.composeapp.generated.resources.reset_progress_message
 import monkifymultiplatform.composeapp.generated.resources.reset_progress_title
@@ -48,22 +51,25 @@ fun ModalDrawerSheetContent(
     modifier: Modifier = Modifier,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
+
     ModalDrawerSheet(modifier = modifier) {
         Column(
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
             // todo refactor this
             Text(
                 text = stringResource(Res.string.app_name),
                 style = MaterialTheme.typography.titleLarge,
             )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth(0.65f))
-            ResetOutlinedButton(onClick = { showDeleteDialog = true })
-            Spacer(modifier = Modifier.height(24.dp))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(0.65f))
             LogoutOutlinedButton(onClick = onLogout)
-            Spacer(modifier = Modifier.height(24.dp))
+            ResetOutlinedButton(onClick = { showDeleteDialog = true })
+            ContactMeOutlinedButton(onClick = {
+                uriHandler.openUri("mailto:${Constants.EMAIL_ADDRESS}")
+            })
             Row(
                 modifier = Modifier.fillMaxWidth(0.65f),
                 horizontalArrangement = Arrangement.Start,
@@ -120,6 +126,20 @@ private fun ResetOutlinedButton(onClick: () -> Unit, modifier: Modifier = Modifi
         text = stringResource(Res.string.reset_progress_title),
         icon = Icons.Default.Restore,
         contentDescription = Icons.Default.Restore.name,
+    )
+}
+
+@Composable
+private fun ContactMeOutlinedButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    PrimaryOutlinedButton(
+        onClick = onClick,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        height = 42.dp,
+        contentAlignment = Alignment.Start,
+        modifier = modifier.fillMaxWidth(0.65f),
+        text = stringResource(Res.string.contact_me),
+        icon = Icons.Default.Email,
+        contentDescription = Icons.Default.Email.name,
     )
 }
 
