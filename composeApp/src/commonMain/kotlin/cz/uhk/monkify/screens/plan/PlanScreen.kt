@@ -63,7 +63,6 @@ import monkifymultiplatform.composeapp.generated.resources.daily_goals_header
 import monkifymultiplatform.composeapp.generated.resources.daily_goals_setup
 import monkifymultiplatform.composeapp.generated.resources.empty_no_data
 import monkifymultiplatform.composeapp.generated.resources.empty_set_up_goal
-import monkifymultiplatform.composeapp.generated.resources.offline_progress_saved_locally
 import monkifymultiplatform.composeapp.generated.resources.plan_header
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -134,10 +133,7 @@ private fun PlanScreenContent(
     Scaffold(
         snackbarHost = { TopSectionSnackbarHost(snackbarHostState) },
     ) {
-        ScreenContentWrapper(
-            isScrollable = true,
-            showScrollbar = true,
-        ) {
+        ScreenContentWrapper(applyVerticalPadding = false, isScrollable = true) {
             if (!isConnected) {
                 OfflineStatusBanner()
             }
@@ -347,7 +343,6 @@ private fun TopSectionSnackbarHost(snackbarHostState: SnackbarHostState) {
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .applyHorizontalScreenPadding(ScreenHorizontalPaddingClass.Half)
-                .padding(horizontal = 4.dp)
                 .offset(y = (-8).dp),
         )
     }

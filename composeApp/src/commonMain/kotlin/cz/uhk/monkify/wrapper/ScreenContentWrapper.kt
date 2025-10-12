@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cz.uhk.monkify.extension.applyHorizontalScreenPadding
 import cz.uhk.monkify.extension.applyHorizontalScreenTabletLimit
+import cz.uhk.monkify.extension.applyVerticalScreenPadding
 import cz.uhk.monkify.extension.drawVerticalScrollbar
 import cz.uhk.monkify.extension.whenTrue
 
@@ -27,7 +28,7 @@ object AppDimens {
     val ScreenPaddingHalf: Dp = 16.dp
     val TabletMaxWidth: Dp = 640.dp
     val BottomBarTopPadding: Dp = 16.dp
-    val BottomBarBottomPadding: Dp = 32.dp
+    val BottomBarBottomPadding: Dp = 48.dp
 }
 
 enum class ScreenHorizontalPaddingClass(val value: Dp?) {
@@ -42,7 +43,8 @@ fun ScreenContentWrapper(
     isScrollable: Boolean = false,
     limitContentWidthForTablet: Boolean = true,
     showScrollbar: Boolean = true,
-    horizontalPaddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Default,
+    applyVerticalPadding: Boolean = true,
+    horizontalPaddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Medium,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     contentVerticalArrangement: Arrangement.Vertical = Arrangement.Top,
     contentAlignment: Alignment = Alignment.TopCenter,
@@ -66,6 +68,9 @@ fun ScreenContentWrapper(
         Column(
             modifier = Modifier
                 .applyHorizontalScreenPadding(horizontalPaddingClass)
+                .whenTrue(applyVerticalPadding) {
+                    applyVerticalScreenPadding(horizontalPaddingClass)
+                }
                 .whenTrue(limitContentWidthForTablet) {
                     applyHorizontalScreenTabletLimit()
                 },

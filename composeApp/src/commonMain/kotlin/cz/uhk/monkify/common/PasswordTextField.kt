@@ -40,7 +40,7 @@ fun PasswordTextField(
         value = value,
         onValueChange = onValueChange,
         label = {
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(label)
@@ -54,7 +54,7 @@ fun PasswordTextField(
             IconButton(onClick = { onPasswordVisibilityChange(!passwordVisible) }) {
                 Icon(
                     imageVector = if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                    contentDescription = null,
                 )
             }
         },

@@ -128,20 +128,26 @@ private fun TaskScreenContent(
             SnackbarHost(
                 modifier = Modifier
                     .applyHorizontalScreenPadding(ScreenHorizontalPaddingClass.Half)
-                    .padding(bottom = 56.dp, start = 4.dp, end = 4.dp),
+                    .padding(bottom = 56.dp),
                 hostState = snackbarHostState,
             )
         },
     ) { paddingValues ->
-        ScreenContentWrapper(modifier = Modifier.padding(paddingValues)) {
+        ScreenContentWrapper(
+            modifier = Modifier.padding(
+                top = paddingValues.calculateTopPadding(),
+                bottom = 24.dp,
+            ),
+            applyVerticalPadding = false,
+        ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 AddTaskTitle(uiState.isEditMode)
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
                 DescriptionInput(
                     description = uiState.description,
                     onDescriptionChange = { onEvent(TaskUiEvent.DescriptionChanged(it)) },
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
                 CategoryDropdown(
                     category = uiState.category,
                     onCategoryChange = { onEvent(TaskUiEvent.CategoryChanged(it)) },

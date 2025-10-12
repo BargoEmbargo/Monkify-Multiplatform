@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -48,6 +47,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ModalDrawerSheetContent(
     onLogout: () -> Unit,
     onReset: () -> Unit,
+    onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -93,6 +93,7 @@ fun ModalDrawerSheetContent(
             onConfirm = {
                 onReset.invoke()
                 showDeleteDialog = false
+                onCloseDrawer()
             },
             onDismiss = { showDeleteDialog = false },
             titleText = stringResource(Res.string.reset_progress_title),
@@ -148,7 +149,7 @@ private fun ContactMeOutlinedButton(onClick: () -> Unit, modifier: Modifier = Mo
 private fun ModalDrawerSheetContentPreview() {
     MonkifyTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            ModalDrawerSheetContent(onLogout = {}, onReset = {})
+            ModalDrawerSheetContent(onLogout = {}, onReset = {}, onCloseDrawer = {})
         }
     }
 }

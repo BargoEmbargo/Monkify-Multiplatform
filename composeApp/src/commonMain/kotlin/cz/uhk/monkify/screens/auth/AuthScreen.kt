@@ -7,28 +7,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import cz.uhk.monkify.common.PrimaryOutlinedButton
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.google
+import monkifymultiplatform.composeapp.generated.resources.sign_in
+import monkifymultiplatform.composeapp.generated.resources.sign_up
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun AuthScreen(
-    navController: NavController,
-    onSignInClick: () -> Unit = {},
-    onSignUpClick: () -> Unit = {},
-) {
+fun AuthScreen(onSignInClick: () -> Unit = {}, onSignUpClick: () -> Unit = {}) {
     AuthScreenContent(onSignInClick, onSignUpClick)
 }
 
@@ -63,33 +60,22 @@ fun AuthScreenContent(onSignInClick: () -> Unit, onSignUpClick: () -> Unit) {
                 )
             }
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter),
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Button(
+                PrimaryOutlinedButton(
                     onClick = onSignInClick,
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Sign In")
-                }
-                Button(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(0.2f),
+                    text = stringResource(Res.string.sign_in),
+                )
+                PrimaryOutlinedButton(
                     onClick = onSignUpClick,
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-                    ),
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Sign Up")
-                }
+                    contentColor = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.secondary.copy(0.2f),
+                    text = stringResource(Res.string.sign_up),
+                )
             }
         }
     }

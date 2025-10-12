@@ -48,7 +48,7 @@ private fun HomeScreeContent(
     streakDates: Set<LocalDate>,
     isConnected: Boolean,
 ) {
-    ScreenContentWrapper(isScrollable = true) {
+    ScreenContentWrapper(isScrollable = true, applyVerticalPadding = false) {
         if (!isConnected) {
             OfflineStatusBanner()
         }

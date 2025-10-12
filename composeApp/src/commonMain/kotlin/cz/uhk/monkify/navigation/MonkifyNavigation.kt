@@ -37,9 +37,7 @@ fun MonkifyNavigation(
     onReset: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-
     val allowDrawerState = rememberUpdatedState(showNavigationBars)
-
     val drawerState = rememberDrawerState(
         initialValue = DrawerValue.Closed,
         confirmStateChange = { newValue ->
@@ -58,7 +56,17 @@ fun MonkifyNavigation(
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = showNavigationBars,
-        drawerContent = { ModalDrawerSheetContent(onLogout = onLogout, onReset = onReset) },
+        drawerContent = {
+            ModalDrawerSheetContent(
+                onLogout = onLogout,
+                onReset = onReset,
+                onCloseDrawer = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                },
+            )
+        },
     ) {
         Scaffold(
             bottomBar = {
@@ -81,14 +89,12 @@ fun MonkifyNavigation(
                 composable(NavigationGraph.PlanScreen.name) { PlanScreen(navController) }
                 composable(NavigationGraph.AuthScreen.name) {
                     AuthScreen(
-                        navController = navController,
                         onSignInClick = { navController.navigate(NavigationGraph.SignInScreen.name) },
                         onSignUpClick = { navController.navigate(NavigationGraph.SignUpScreen.name) },
                     )
                 }
                 composable(NavigationGraph.SignInScreen.name) {
                     SignInScreen(
-                        navController = navController,
                         onSuccess = {
                             navController.navigate(NavigationGraph.HomeScreen.name) {
                                 popUpTo(NavigationGraph.AuthScreen.name) { inclusive = true }
@@ -98,7 +104,6 @@ fun MonkifyNavigation(
                 }
                 composable(NavigationGraph.SignUpScreen.name) {
                     SignUpScreen(
-                        navController = navController,
                         onSuccess = {
                             navController.navigate(NavigationGraph.HomeScreen.name) {
                                 popUpTo(NavigationGraph.AuthScreen.name) { inclusive = true }

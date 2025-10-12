@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,24 +24,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
 import cz.uhk.monkify.common.PasswordTextField
+import cz.uhk.monkify.common.PrimaryOutlinedButton
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
+import monkifymultiplatform.composeapp.generated.resources.Res
+import monkifymultiplatform.composeapp.generated.resources.email
+import monkifymultiplatform.composeapp.generated.resources.email_and_password_empty
+import monkifymultiplatform.composeapp.generated.resources.password
+import monkifymultiplatform.composeapp.generated.resources.sign_in
+import monkifymultiplatform.composeapp.generated.resources.sign_in_loading
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SignInScreen(
-    navController: NavController,
-    onSuccess: () -> Unit = {},
-    viewModel: AuthViewModel = koinViewModel(),
-) {
+fun SignInScreen(onSuccess: () -> Unit = {}, viewModel: AuthViewModel = koinViewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
     var formState by remember { mutableStateOf(AuthFormState()) }
     var localError by remember { mutableStateOf<String?>(null) }
-    val uiState by viewModel.uiState.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
+    val localErrorMessage = stringResource(Res.string.email_and_password_empty)
 
     // If sign-in is successful, call onSuccess
     if (uiState.isSuccess) {
@@ -56,19 +60,19 @@ fun SignInScreen(
         errorMessage = uiState.errorMessage ?: localError,
         onSignInClick = {
             if (formState.email.isBlank() || formState.password.isBlank()) {
-                localError = "Email and password must not be empty"
+                localError = localErrorMessage
             } else {
                 localError = null
                 viewModel.signIn(formState.email, formState.password)
             }
         },
         passwordVisible = passwordVisible,
-        onPasswordVisibilityChange = { passwordVisible = it }
+        onPasswordVisibilityChange = { passwordVisible = it },
     )
 }
 
 @Composable
-fun SignInScreenContent(
+private fun SignInScreenContent(
     formState: AuthFormState,
     onFormChange: (AuthFormState) -> Unit,
     isLoading: Boolean,
@@ -78,16 +82,15 @@ fun SignInScreenContent(
     onPasswordVisibilityChange: (Boolean) -> Unit,
 ) {
     ScreenContentWrapper(
+        modifier = Modifier.imePadding(),
         showScrollbar = false,
         contentAlignment = Alignment.Center,
     ) {
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            "Sign In",
+            text = stringResource(Res.string.sign_in),
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start),
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start),
         )
         Spacer(modifier = Modifier.height(16.dp))
         GlassmorpismCard(modifier = Modifier.fillMaxWidth()) {
@@ -101,7 +104,7 @@ fun SignInScreenContent(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.Email, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Email")
+                            Text(stringResource(Res.string.email))
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -110,11 +113,11 @@ fun SignInScreenContent(
                 PasswordTextField(
                     value = formState.password,
                     onValueChange = { onFormChange(formState.copy(password = it)) },
-                    label = "Password",
+                    label = stringResource(Res.string.password),
                     passwordVisible = passwordVisible,
                     onPasswordVisibilityChange = onPasswordVisibilityChange,
                     enabled = !isLoading,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -122,13 +125,13 @@ fun SignInScreenContent(
             Text(errorMessage, color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.weight(1f))
-        Button(
+        PrimaryOutlinedButton(
             onClick = onSignInClick,
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading,
-        ) {
-            Text(if (isLoading) "Signing In..." else "Sign In")
-        }
+            containerColor = MaterialTheme.colorScheme.primary.copy(0.2f),
+            text = stringResource(if( isLoading) Res.string.sign_in_loading else Res.string.sign_in),
+        )
     }
 }
 
@@ -143,7 +146,7 @@ private fun SignInScreenPreview() {
             errorMessage = null,
             onSignInClick = {},
             passwordVisible = false,
-            onPasswordVisibilityChange = {}
+            onPasswordVisibilityChange = {},
         )
     }
 }

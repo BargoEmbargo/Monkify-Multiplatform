@@ -61,4 +61,14 @@
     <string name="reset_progress_message">Are you sure you want to reset your progress? This action cannot be undone.</string>
     <string name="restart_progress">Restart Progress</string>
     <string name="contact_me">Contact</string>
+    <string name="sign_in_loading">Signing In...</string>
+    <string name="sign_up_loading">Signing Up...</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password_not_match">Passwords do not match</string>
+    <string name="email_and_password_empty">Email and password must not be empty</string>
+    <string name="email">Email</string>
 </resources>

@@ -71,13 +71,16 @@ fun Modifier.conditional(
 
 fun Modifier.whenTrue(condition: Boolean, apply: Modifier.() -> Modifier): Modifier = if (condition) apply(this) else this
 
-fun Modifier.applyHorizontalScreenPadding(paddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Default): Modifier =
+fun Modifier.applyHorizontalScreenPadding(paddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Medium): Modifier =
     paddingClass.value?.let { padding(horizontal = it) } ?: this
+
+fun Modifier.applyVerticalScreenPadding(paddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Medium): Modifier =
+    paddingClass.value?.let { padding(vertical = it) } ?: this
 
 fun Modifier.applyHorizontalScreenTabletLimit(): Modifier = widthIn(max = AppDimens.TabletMaxWidth)
 
 fun Modifier.applyHorizontalScreenPaddingAndTabletLimit(
-    paddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Default,
+    paddingClass: ScreenHorizontalPaddingClass = ScreenHorizontalPaddingClass.Medium,
 ): Modifier = applyHorizontalScreenPadding(paddingClass)
     .applyHorizontalScreenTabletLimit()
 

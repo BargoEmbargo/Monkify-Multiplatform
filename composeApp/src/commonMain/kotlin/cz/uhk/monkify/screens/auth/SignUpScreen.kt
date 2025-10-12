@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,26 +24,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import cz.uhk.monkify.common.GlassmorpismCard
 import cz.uhk.monkify.common.PasswordTextField
+import cz.uhk.monkify.common.PrimaryOutlinedButton
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
+import monkifymultiplatform.composeapp.generated.resources.Res
+import monkifymultiplatform.composeapp.generated.resources.confirm_password
+import monkifymultiplatform.composeapp.generated.resources.create_account
+import monkifymultiplatform.composeapp.generated.resources.email
+import monkifymultiplatform.composeapp.generated.resources.password
+import monkifymultiplatform.composeapp.generated.resources.password_not_match
+import monkifymultiplatform.composeapp.generated.resources.sign_up
+import monkifymultiplatform.composeapp.generated.resources.sign_up_loading
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SignUpScreen(
-    navController: NavController,
-    onSuccess: () -> Unit = {},
-    viewModel: AuthViewModel = koinViewModel(),
-) {
+fun SignUpScreen(onSuccess: () -> Unit = {}, viewModel: AuthViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     var formState by remember { mutableStateOf(AuthFormState()) }
     var localError by remember { mutableStateOf<String?>(null) }
 
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+    val localErrorMessage = stringResource(Res.string.password_not_match)
 
     if (uiState.isSuccess) {
         onSuccess()
@@ -57,7 +63,7 @@ fun SignUpScreen(
         errorMessage = uiState.errorMessage ?: localError,
         onSignUpClick = {
             if (formState.password != formState.confirmPassword) {
-                localError = "Passwords do not match"
+                localError = localErrorMessage
             } else {
                 localError = null
                 viewModel.signUp(formState.email, formState.password)
@@ -71,7 +77,7 @@ fun SignUpScreen(
 }
 
 @Composable
-fun SignUpScreenContent(
+private fun SignUpScreenContent(
     formState: AuthFormState,
     onFormChange: (AuthFormState) -> Unit,
     isLoading: Boolean,
@@ -83,12 +89,13 @@ fun SignUpScreenContent(
     onConfirmPasswordVisibilityChange: (Boolean) -> Unit,
 ) {
     ScreenContentWrapper(
+        modifier = Modifier.imePadding(),
         showScrollbar = false,
         contentAlignment = Alignment.Center,
     ) {
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            "Sign Up",
+            stringResource(Res.string.sign_up),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -104,9 +111,9 @@ fun SignUpScreenContent(
                     onValueChange = { onFormChange(formState.copy(email = it)) },
                     label = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Email, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Filled.Email, contentDescription = Icons.Filled.Email.name, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Email")
+                            Text(stringResource(Res.string.email))
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -115,7 +122,7 @@ fun SignUpScreenContent(
                 PasswordTextField(
                     value = formState.password,
                     onValueChange = { onFormChange(formState.copy(password = it)) },
-                    label = "Password",
+                    label = stringResource(Res.string.password),
                     passwordVisible = passwordVisible,
                     onPasswordVisibilityChange = onPasswordVisibilityChange,
                     enabled = !isLoading,
@@ -124,7 +131,7 @@ fun SignUpScreenContent(
                 PasswordTextField(
                     value = formState.confirmPassword,
                     onValueChange = { onFormChange(formState.copy(confirmPassword = it)) },
-                    label = "Confirm Password",
+                    label = stringResource(Res.string.confirm_password),
                     passwordVisible = confirmPasswordVisible,
                     onPasswordVisibilityChange = onConfirmPasswordVisibilityChange,
                     enabled = !isLoading,
@@ -136,13 +143,13 @@ fun SignUpScreenContent(
             Text(errorMessage, color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.weight(1f))
-        Button(
+        PrimaryOutlinedButton(
             onClick = onSignUpClick,
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading,
-        ) {
-            Text(if (isLoading) "Signing Up..." else "Create Account")
-        }
+            containerColor = MaterialTheme.colorScheme.primary.copy(0.2f),
+            text = stringResource(if (isLoading) Res.string.sign_up_loading else Res.string.create_account),
+        )
     }
 }
 

@@ -41,7 +41,7 @@ fun PrimaryOutlinedButton(
     containerColor: Color = Color.Transparent,
     contentColor: Color = MaterialTheme.colorScheme.primary,
     disabledContentColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     loading: Boolean = false,
     contentAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
