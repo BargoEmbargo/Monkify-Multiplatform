@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -27,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cz.uhk.monkify.common.PrimaryOutlinedButton
 import cz.uhk.monkify.common.dialogs.DeleteConfirmationDialog
@@ -35,11 +39,15 @@ import cz.uhk.monkify.util.Constants
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.app_name
 import monkifymultiplatform.composeapp.generated.resources.app_version
+import monkifymultiplatform.composeapp.generated.resources.author_name
+import monkifymultiplatform.composeapp.generated.resources.author_title
 import monkifymultiplatform.composeapp.generated.resources.contact_me
 import monkifymultiplatform.composeapp.generated.resources.log_out
 import monkifymultiplatform.composeapp.generated.resources.reset_progress_message
 import monkifymultiplatform.composeapp.generated.resources.reset_progress_title
 import monkifymultiplatform.composeapp.generated.resources.restart_progress
+import monkifymultiplatform.composeapp.generated.resources.uhk
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -55,7 +63,7 @@ fun ModalDrawerSheetContent(
 
     ModalDrawerSheet(modifier = modifier) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(24.dp).fillMaxHeight().fillMaxWidth(0.7f),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -64,27 +72,14 @@ fun ModalDrawerSheetContent(
                 text = stringResource(Res.string.app_name),
                 style = MaterialTheme.typography.titleLarge,
             )
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(0.65f))
+            HorizontalDivider()
             LogoutOutlinedButton(onClick = onLogout)
             ResetOutlinedButton(onClick = { showDeleteDialog = true })
             ContactMeOutlinedButton(onClick = {
                 uriHandler.openUri("mailto:${Constants.EMAIL_ADDRESS}")
             })
-            Row(
-                modifier = Modifier.fillMaxWidth(0.65f),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(imageVector = Icons.Default.Info, contentDescription = Icons.Default.Info.name)
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(text = stringResource(Res.string.app_version))
-                    Text(
-                        text = Constants.APP_VERSION,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            AppVersionSection()
+            AuthorInfoSection()
         }
     }
 
@@ -109,7 +104,6 @@ private fun LogoutOutlinedButton(onClick: () -> Unit, modifier: Modifier = Modif
         onClick = onClick,
         height = 42.dp,
         contentAlignment = Alignment.Start,
-        modifier = modifier.fillMaxWidth(0.65f),
         text = stringResource(Res.string.log_out),
         icon = Icons.AutoMirrored.Filled.Logout,
         contentDescription = Icons.AutoMirrored.Filled.Logout.name,
@@ -123,7 +117,6 @@ private fun ResetOutlinedButton(onClick: () -> Unit, modifier: Modifier = Modifi
         onClick = onClick,
         height = 42.dp,
         contentAlignment = Alignment.Start,
-        modifier = modifier.fillMaxWidth(0.65f),
         text = stringResource(Res.string.reset_progress_title),
         icon = Icons.Default.Restore,
         contentDescription = Icons.Default.Restore.name,
@@ -137,11 +130,56 @@ private fun ContactMeOutlinedButton(onClick: () -> Unit, modifier: Modifier = Mo
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         height = 42.dp,
         contentAlignment = Alignment.Start,
-        modifier = modifier.fillMaxWidth(0.65f),
         text = stringResource(Res.string.contact_me),
         icon = Icons.Default.Email,
         contentDescription = Icons.Default.Email.name,
     )
+}
+
+@Composable
+private fun AppVersionSection(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(imageVector = Icons.Default.Info, contentDescription = Icons.Default.Info.name)
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(text = stringResource(Res.string.app_version))
+            Text(
+                text = Constants.APP_VERSION,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AuthorInfoSection(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxHeight(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        HorizontalDivider(modifier = Modifier.padding(bottom = 24.dp))
+        Text(
+            text = stringResource(Res.string.author_title),
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.author_name),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Icon(
+            painter = painterResource(Res.drawable.uhk),
+            contentDescription = null,
+            modifier = Modifier.height(40.dp),
+        )
+    }
 }
 
 @Preview

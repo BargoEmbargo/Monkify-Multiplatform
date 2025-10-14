@@ -71,4 +71,6 @@
     <string name="password_not_match">Passwords do not match</string>
     <string name="email_and_password_empty">Email and password must not be empty</string>
     <string name="email">Email</string>
+    <string name="author_title">Author:</string>
+    <string name="author_name">Bc. Daniel Pitropovski</string>
 </resources>
