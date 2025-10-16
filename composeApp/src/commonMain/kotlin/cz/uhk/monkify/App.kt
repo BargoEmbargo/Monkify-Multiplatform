@@ -1,21 +1,24 @@
 package cz.uhk.monkify
 
-import androidx.compose.foundation.background
+import SplashOverlay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cz.uhk.monkify.navigation.MonkifyNavigation
 import cz.uhk.monkify.navigation.NavigationGraph
 import cz.uhk.monkify.theme.MonkifyTheme
+import cz.uhk.monkify.util.Constants.SPLASH_SCREEN_DELAY
 import cz.uhk.monkify.viewmodel.MainViewModel
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -33,20 +36,23 @@ fun App() {
         val isAuthenticated by mainViewModel.isAuthenticated.collectAsState(initial = null)
         val onboardingCompleted by mainViewModel.onboardingCompleted.collectAsState(initial = null)
 
-        if (onboardingCompleted == null || isAuthenticated == null) {
-            Box(
-                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            val startDestination = when {
-                onboardingCompleted == false -> NavigationGraph.OnboardingScreen.name
-                isAuthenticated == true -> NavigationGraph.HomeScreen.name
-                else -> NavigationGraph.AuthScreen.name
-            }
+        var minSplashElapsed by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            delay(SPLASH_SCREEN_DELAY)
+            minSplashElapsed = true
+        }
 
+        val resolvedFlags = onboardingCompleted != null && isAuthenticated != null
+        val showSplash = !minSplashElapsed || !resolvedFlags
+
+        val startDestination = when {
+            !resolvedFlags -> NavigationGraph.PlanScreen.name
+            onboardingCompleted == false -> NavigationGraph.OnboardingScreen.name
+            isAuthenticated == true -> NavigationGraph.HomeScreen.name
+            else -> NavigationGraph.AuthScreen.name
+        }
+
+        Box(Modifier.fillMaxSize()) {
             MonkifyNavigation(
                 navController = navController,
                 showNavigationBars = showNavigationBars,
@@ -71,6 +77,7 @@ fun App() {
                     mainViewModel.resetProgress()
                 },
             )
+            SplashOverlay(showSplash)
         }
     }
 }
