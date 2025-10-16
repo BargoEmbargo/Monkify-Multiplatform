@@ -73,4 +73,5 @@
     <string name="email">Email</string>
     <string name="author_title">Author:</string>
     <string name="author_name">Bc. Daniel Pitropovski</string>
+    <string name="connecting">Connecting...</string>
 </resources>
