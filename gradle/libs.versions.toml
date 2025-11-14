@@ -27,9 +27,11 @@ kermit = "2.0.8"
 icons = "1.7.3"
 gitlive = "2.3.0"
 google-services = "4.4.2"
+kotlin_serialization = "2.2.0"
 
 [libraries]
 calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar" }
+firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -69,6 +71,7 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 firebase-auth-gitlive = { module = "dev.gitlive:firebase-auth", version.ref = "gitlive" }
 
 [plugins]
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin_serialization" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

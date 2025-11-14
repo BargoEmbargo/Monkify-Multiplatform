@@ -11,13 +11,14 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -33,6 +34,8 @@ kotlin {
     }
 
     jvm("desktop")
+
+    jvmToolchain(17)
 
     sourceSets {
         val desktopMain by getting
@@ -79,6 +82,9 @@ kotlin {
 
             // Firebase
             implementation(libs.firebase.auth.gitlive)
+
+            // FireStore
+            implementation(libs.firebase.firestore)
 
             // Calendar
             implementation(libs.calendar)

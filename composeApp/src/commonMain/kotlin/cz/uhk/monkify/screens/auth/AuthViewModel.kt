@@ -2,7 +2,9 @@ package cz.uhk.monkify.screens.auth
 
 import androidx.lifecycle.ViewModel
 import co.touchlab.kermit.Severity
+import cz.uhk.monkify.database.remote.FirestoreTaskRepository
 import cz.uhk.monkify.preferences.PreferencesManager
+import cz.uhk.monkify.repository.DailyTaskRepository
 import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,8 @@ class AuthViewModel :
     ViewModel(),
     KoinComponent {
     private val firebaseAuth: FirebaseAuth by inject()
+    private val firestoreTaskRepository: FirestoreTaskRepository by inject()
+    private val dailyTaskRepository: DailyTaskRepository by inject()
     private val preferencesManager: PreferencesManager by inject()
     private val log = AppLog.logger<AuthViewModel>(level = Severity.Info)
 
@@ -42,8 +46,13 @@ class AuthViewModel :
             try {
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                 preferencesManager.setValue(PreferencesManager.AUTHENTICATED, true)
+                val userId = firebaseAuth.currentUser?.uid
+                if (userId != null) {
+                    val remoteTasks = firestoreTaskRepository.getTasks(userId)
+                    remoteTasks.forEach { dailyTaskRepository.upsertInfo(it) }
+                }
                 _uiState.value = AuthUiState(isSuccess = true)
-                log.d { "User signed in" }
+                log.d { "User signed in and tasks synced" }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(errorMessage = e.message)
             }
