@@ -76,7 +76,8 @@ private fun HomeScreeContentPreview() {
         )
     }
 }
-@Preview
+
+@Preview()
 @Composable
 private fun HomeScreeContentNoConnectedPreview() {
     MonkifyTheme {

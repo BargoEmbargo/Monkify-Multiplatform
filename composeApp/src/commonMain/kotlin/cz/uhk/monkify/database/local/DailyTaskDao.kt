@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DailyTaskDao {
-    @Upsert()
-    suspend fun upsertInfo(info: DailyTask)
+    @Upsert
+    suspend fun upsertInfo(info: DailyTask): Long
 
     @Delete
     suspend fun deleteInfo(info: DailyTask)

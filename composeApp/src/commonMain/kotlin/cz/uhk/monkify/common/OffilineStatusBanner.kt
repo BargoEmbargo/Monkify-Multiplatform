@@ -18,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cz.uhk.monkify.theme.MonkifyTheme
 import monkifymultiplatform.composeapp.generated.resources.Res
 import monkifymultiplatform.composeapp.generated.resources.offline_progress_saved_locally
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun OfflineStatusBanner() {
@@ -50,4 +52,12 @@ fun OfflineStatusBanner() {
         }
     }
     Spacer(modifier = Modifier.height(12.dp))
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OfflineStatusBannerPreview() {
+    MonkifyTheme {
+        OfflineStatusBanner()
+    }
 }

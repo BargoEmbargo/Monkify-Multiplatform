@@ -17,9 +17,14 @@ class DailyTaskRepository(
 
     suspend fun upsertInfo(info: DailyTask) {
         log.d { "Upsert task for id=${info.id}" }
-        dailyTask.upsertInfo(info)
+        val resultId = dailyTask.upsertInfo(info)
+        val taskForRemote = if (info.id == 0 && resultId > 0) {
+            info.copy(id = resultId.toInt())
+        } else {
+            info
+        }
         firebaseAuth.currentUser?.uid?.let { userId ->
-            firestoreTaskRepository.uploadTask(userId, info)
+            firestoreTaskRepository.uploadTask(userId, taskForRemote)
         }
     }
 
