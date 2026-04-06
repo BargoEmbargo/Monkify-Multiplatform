@@ -95,6 +95,7 @@ fun MonkifyNavigation(
                 }
                 composable(NavigationGraph.SignInScreen.name) {
                     SignInScreen(
+                        onNavigateBack = { navController.popBackStack() },
                         onSuccess = {
                             navController.navigate(NavigationGraph.HomeScreen.name) {
                                 popUpTo(NavigationGraph.AuthScreen.name) { inclusive = true }
@@ -104,6 +105,7 @@ fun MonkifyNavigation(
                 }
                 composable(NavigationGraph.SignUpScreen.name) {
                     SignUpScreen(
+                        onNavigateBack = { navController.popBackStack() },
                         onSuccess = {
                             navController.navigate(NavigationGraph.HomeScreen.name) {
                                 popUpTo(NavigationGraph.AuthScreen.name) { inclusive = true }

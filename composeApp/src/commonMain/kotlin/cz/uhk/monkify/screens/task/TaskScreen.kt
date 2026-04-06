@@ -58,6 +58,10 @@ import monkifymultiplatform.composeapp.generated.resources.edit_task
 import monkifymultiplatform.composeapp.generated.resources.enter_description
 import monkifymultiplatform.composeapp.generated.resources.snackbar_task_added
 import monkifymultiplatform.composeapp.generated.resources.snackbar_task_updated
+import monkifymultiplatform.composeapp.generated.resources.task_action_add
+import monkifymultiplatform.composeapp.generated.resources.task_action_delete
+import monkifymultiplatform.composeapp.generated.resources.task_action_delete_all
+import monkifymultiplatform.composeapp.generated.resources.task_action_update
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -274,7 +278,7 @@ private fun TaskActionButtons(
         ) {
             Icon(Icons.Default.Add, contentDescription = Icons.Default.Add.name)
             Spacer(Modifier.width(8.dp))
-            Text(if (isEditMode) "Update" else "Add")
+            Text(stringResource(if (isEditMode) Res.string.task_action_update else Res.string.task_action_add))
         }
 
         Button(
@@ -288,7 +292,7 @@ private fun TaskActionButtons(
         ) {
             Icon(imageVector = Icons.Default.Delete, contentDescription = Icons.Default.Delete.name)
             Spacer(Modifier.width(8.dp))
-            Text(if (isEditMode) "Delete" else "Delete All")
+            Text(stringResource(if (isEditMode) Res.string.task_action_delete else Res.string.task_action_delete_all))
         }
     }
 }

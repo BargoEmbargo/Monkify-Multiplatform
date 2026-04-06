@@ -5,7 +5,7 @@
     <string name="onboarding_title_2">Define Your Path</string>
     <string name="onboarding_desc_2">Take control of your life by setting clear, achievable goals. Monkify helps you define your path and holds you accountable, ensuring you stay on track to turn your dreams into reality.</string>
     <string name="onboarding_title_3">Cultivate Lasting Habits</string>
-    <string name="onboarding_desc_3">Success isn't a one-time event; it's the result of daily habits. With Consistify, you can build a foundation of discipline that leads to lifelong success. Start your journey today.</string>
+    <string name="onboarding_desc_3">Success isn't a one-time event; it's the result of daily habits. With Monkify, you can build a foundation of discipline that leads to lifelong success. Start your journey today.</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_finish">Finish</string>
@@ -74,4 +74,10 @@
     <string name="author_title">Author:</string>
     <string name="author_name">Bc. Daniel Pitropovski</string>
     <string name="connecting">Connecting...</string>
+    <string name="auth_welcome">Welcome!</string>
+    <string name="auth_choose_continue">Choose how to continue</string>
+    <string name="task_action_delete">Delete</string>
+    <string name="task_action_delete_all">Delete All</string>
+    <string name="task_action_add">Add</string>
+    <string name="task_action_update">Update</string>
 </resources>

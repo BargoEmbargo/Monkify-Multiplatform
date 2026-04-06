@@ -190,8 +190,8 @@ private fun OnboardingPageContent(page: OnboardingPage) {
                 painter = painterResource(page.imageRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(210.dp)
-                    .padding(bottom = 32.dp),
+                    .size(300.dp)
+                    .padding(bottom = 16.dp),
             )
             Text(
                 text = page.title,

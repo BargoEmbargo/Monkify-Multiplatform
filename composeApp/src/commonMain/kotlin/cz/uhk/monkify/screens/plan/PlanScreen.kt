@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -289,24 +290,34 @@ private fun DailyGoalItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clip(MaterialTheme.shapes.medium).clickable(onClick = onRowClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(onClick = onRowClick)
+            .padding(vertical = 4.dp),
     ) {
         Text(
             text = "$number.",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(end = 8.dp),
+            modifier = Modifier.width(28.dp),
+            textAlign = TextAlign.End,
         )
         Checkbox(
             checked = checked,
             onCheckedChange = { onCheckedChange() },
-            modifier = Modifier.padding(0.dp),
+            modifier = Modifier.padding(start = 8.dp),
         )
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 12.dp),
-        )
-        Spacer(modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp, end = 12.dp),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         val categoryEnum = CategoryTask.entries.find { it.name.equals(category, ignoreCase = true) } ?: CategoryTask.Other
         Box(
             modifier = Modifier.size(24.dp),

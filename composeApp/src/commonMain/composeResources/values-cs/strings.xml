@@ -5,7 +5,7 @@
     <string name="onboarding_title_2">Definujte svou cestu</string>
     <string name="onboarding_desc_2">Převezměte kontrolu nad svým životem stanovením jasných, dosažitelných cílů. Monkify vám pomůže definovat cestu a bude vás motivovat, abyste své sny proměnili ve skutečnost.</string>
     <string name="onboarding_title_3">Budujte trvalé návyky</string>
-    <string name="onboarding_desc_3">Úspěch není jednorázová událost; je to výsledek každodenních návyků. S Consistify si můžete vybudovat disciplínu vedoucí k celoživotnímu úspěchu. Začněte svou cestu dnes.</string>
+    <string name="onboarding_desc_3">Úspěch není jednorázová událost; je to výsledek každodenních návyků. S Monkify si můžete vybudovat disciplínu vedoucí k celoživotnímu úspěchu. Začněte svou cestu dnes.</string>
     <string name="onboarding_back">Zpět</string>
     <string name="onboarding_next">Další</string>
     <string name="onboarding_finish">Dokončit</string>
@@ -60,4 +60,24 @@
     <string name="reset_progress_title">Resetovat pokrok</string>
     <string name="reset_progress_message">Opravdu chcete resetovat svůj pokrok? Tuto akci nelze vrátit zpět.</string>
     <string name="restart_progress">Restartovat pokrok</string>
+    <string name="contact_me">Kontakt</string>
+    <string name="sign_in_loading">Přihlašování...</string>
+    <string name="sign_up_loading">Registrace...</string>
+    <string name="create_account">Vytvořit účet</string>
+    <string name="sign_in">Přihlásit se</string>
+    <string name="sign_up">Registrovat se</string>
+    <string name="password">Heslo</string>
+    <string name="confirm_password">Potvrďte heslo</string>
+    <string name="password_not_match">Hesla se neshodují</string>
+    <string name="email_and_password_empty">E-mail a heslo nesmí být prázdné</string>
+    <string name="email">E-mail</string>
+    <string name="author_title">Autor:</string>
+    <string name="author_name">Bc. Daniel Pitropovski</string>
+    <string name="connecting">Připojování...</string>
+    <string name="auth_welcome">Vítejte!</string>
+    <string name="auth_choose_continue">Vyberte, jak chcete pokračovat</string>
+    <string name="task_action_delete">Smazat</string>
+    <string name="task_action_delete_all">Smazat vše</string>
+    <string name="task_action_add">Přidat</string>
+    <string name="task_action_update">Upravit</string>
 </resources>

@@ -17,6 +17,8 @@ import cz.uhk.monkify.common.PrimaryOutlinedButton
 import cz.uhk.monkify.theme.MonkifyTheme
 import cz.uhk.monkify.wrapper.ScreenContentWrapper
 import monkifymultiplatform.composeapp.generated.resources.Res
+import monkifymultiplatform.composeapp.generated.resources.auth_choose_continue
+import monkifymultiplatform.composeapp.generated.resources.auth_welcome
 import monkifymultiplatform.composeapp.generated.resources.google
 import monkifymultiplatform.composeapp.generated.resources.sign_in
 import monkifymultiplatform.composeapp.generated.resources.sign_up
@@ -49,12 +51,12 @@ fun AuthScreenContent(onSignInClick: () -> Unit, onSignUpClick: () -> Unit) {
                     contentDescription = "App Icon",
                 )
                 Text(
-                    text = "Welcome!",
+                    text = stringResource(Res.string.auth_welcome),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Choose how to continue",
+                    text = stringResource(Res.string.auth_choose_continue),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
