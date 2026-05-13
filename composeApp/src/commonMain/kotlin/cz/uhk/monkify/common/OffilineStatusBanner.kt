@@ -54,7 +54,7 @@ fun OfflineStatusBanner() {
     Spacer(modifier = Modifier.height(12.dp))
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun OfflineStatusBannerPreview() {
     MonkifyTheme {

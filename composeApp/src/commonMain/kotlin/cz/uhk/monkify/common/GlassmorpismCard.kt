@@ -30,7 +30,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GlassmorpismCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    val borderColors = remember { listOf(Color.White.copy(alpha = 0.2f), Color.White.copy(alpha = 0.85f)) }
+    val borderColors = remember { listOf(Color.Gray.copy(alpha = 0.2f), Color.Gray.copy(alpha = 0.85f)) }
     val animationDuration = 2000
     var currentColorIndex by remember { mutableStateOf(0) }
 
@@ -66,8 +66,8 @@ fun GlassmorpismCard(modifier: Modifier = Modifier, content: @Composable () -> U
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.2f),
-                        Color.White.copy(alpha = 0.23f),
+                        Color.Gray.copy(alpha = 0.35f),
+                        Color.Gray.copy(alpha = 0.25f),
                     ),
                     startY = 100.0f,
                     endY = 400.0f,
