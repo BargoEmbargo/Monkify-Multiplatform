@@ -4,12 +4,17 @@ import co.touchlab.kermit.Severity
 import com.kizitonwose.calendar.core.now
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.repository.UserStatsRepository
 import cz.uhk.monkify.util.AppLog
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 @OptIn(ExperimentalTime::class)
-class StreakManager(private val preferencesManager: PreferencesManager, private val dailyTaskRepository: DailyTaskRepository) {
+class StreakManager(
+    private val preferencesManager: PreferencesManager,
+    private val dailyTaskRepository: DailyTaskRepository,
+    private val userStatsRepository: UserStatsRepository,
+) {
     private val log = AppLog.logger<StreakManager>(level = Severity.Info)
 
     suspend fun checkStreakUpdate() {
@@ -36,7 +41,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
 
         if (lastActivityDateString.isEmpty()) {
             log.i { "First time opening app, setting today as last activity date" }
-            preferencesManager.setValue(PreferencesManager.LAST_ACTIVITY_DATE, today.toString())
+            userStatsRepository.setLastActivityDate(today.toString())
             return
         }
 
@@ -44,7 +49,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
             LocalDate.parse(lastActivityDateString)
         } catch (e: Exception) {
             log.e(e) { "Failed to parse last activity date: $lastActivityDateString" }
-            preferencesManager.setValue(PreferencesManager.LAST_ACTIVITY_DATE, today.toString())
+            userStatsRepository.setLastActivityDate(today.toString())
             return
         }
 
@@ -58,7 +63,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
             if (!allTasksCompleted) {
                 // Reset streak if tasks weren't completed
                 log.i { "Not all tasks were completed yesterday. Resetting streak to 0." }
-                preferencesManager.setValue(PreferencesManager.DAYS_COMPLETED, 0)
+                userStatsRepository.setDaysCompleted(0)
             } else {
                 log.i { "All tasks were completed yesterday. Streak maintained." }
             }
@@ -67,7 +72,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
             resetTasksForNewDay()
 
             // Update last activity date to today
-            preferencesManager.setValue(PreferencesManager.LAST_ACTIVITY_DATE, today.toString())
+            userStatsRepository.setLastActivityDate(today.toString())
         }
     }
 
@@ -77,7 +82,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
      */
     suspend fun updateActivityDate() {
         val today = LocalDate.now()
-        preferencesManager.setValue(PreferencesManager.LAST_ACTIVITY_DATE, today.toString())
+        userStatsRepository.setLastActivityDate(today.toString())
         log.i { "Updated last activity date to: $today" }
     }
 
@@ -124,7 +129,7 @@ class StreakManager(private val preferencesManager: PreferencesManager, private 
             log.i { "[TEST] 20 seconds passed. Checking if tasks were completed." }
             val allTasksCompleted = checkIfAllTasksWereCompleted()
             if (!allTasksCompleted) {
-                preferencesManager.setValue(PreferencesManager.DAYS_COMPLETED, 0)
+                userStatsRepository.setDaysCompleted(0)
                 log.i { "[TEST] Not all tasks completed. Streak reset." }
             } else {
                 log.i { "[TEST] All tasks completed. Streak maintained." }

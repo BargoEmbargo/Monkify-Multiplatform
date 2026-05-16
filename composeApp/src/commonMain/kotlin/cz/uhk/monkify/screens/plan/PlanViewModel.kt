@@ -6,6 +6,7 @@ import co.touchlab.kermit.Severity
 import cz.uhk.monkify.database.model.DailyTask
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.repository.UserStatsRepository
 import cz.uhk.monkify.service.StreakManager
 import cz.uhk.monkify.util.AppLog
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,6 +25,7 @@ class PlanViewModel(
     private val repository: DailyTaskRepository,
     private val preferencesManager: PreferencesManager,
     private val streakManager: StreakManager,
+    private val userStatsRepository: UserStatsRepository,
 ) : ViewModel() {
     private val log = AppLog.logger<PlanViewModel>(level = Severity.Info)
 
@@ -101,7 +103,7 @@ class PlanViewModel(
     private suspend fun handleAllTasksChecked(updatedTasks: List<DailyTask>) {
         if (updatedTasks.isNotEmpty()) {
             val current = preferencesManager.getValue(PreferencesManager.DAYS_COMPLETED, 0).first()
-            preferencesManager.setValue(PreferencesManager.DAYS_COMPLETED, current + 1)
+            userStatsRepository.setDaysCompleted(current + 1)
             streakManager.updateActivityDate()
             log.i { "All tasks completed! Incremented DAYS_COMPLETED to ${current + 1}" }
             _isLocked.value = true

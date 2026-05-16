@@ -44,6 +44,11 @@ class DailyTaskRepository(
         }
     }
 
+    suspend fun deleteAllLocal() {
+        log.d { "Deleting ALL local tasks (no remote)" }
+        dailyTask.deleteAllInfo()
+    }
+
     fun getArticles(): Flow<List<DailyTask>> {
         log.d { "Getting all articles" }
         return dailyTask.getArticles()

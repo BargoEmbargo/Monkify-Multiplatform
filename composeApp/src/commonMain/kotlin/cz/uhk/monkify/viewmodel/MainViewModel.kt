@@ -2,8 +2,12 @@ package cz.uhk.monkify.viewmodel
 
 import androidx.lifecycle.ViewModel
 import co.touchlab.kermit.Severity
+import cz.uhk.monkify.database.model.DailyTask
+import cz.uhk.monkify.model.CategoryTask
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.repository.UserStatsRepository
+import cz.uhk.monkify.service.FirestoreSyncManager
 import cz.uhk.monkify.service.StreakManager
 import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -14,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -27,6 +32,8 @@ class MainViewModel :
     private val preferences: PreferencesManager by inject()
     private val streakManager: StreakManager by inject()
     private val repository: DailyTaskRepository by inject()
+    private val userStatsRepository: UserStatsRepository by inject()
+    private val firestoreSyncManager: FirestoreSyncManager by inject()
 
     private val _isAuthenticated = MutableStateFlow<Boolean?>(null)
     val isAuthenticated: StateFlow<Boolean?> = _isAuthenticated.asStateFlow()
@@ -53,6 +60,10 @@ class MainViewModel :
         viewModelScope.launch {
             streakManager.checkStreakUpdate()
         }
+        viewModelScope.launch {
+            seedDebugTasksIfNeeded()
+        }
+        firestoreSyncManager.start()
     }
 
     fun setOnboardingCompleted() {
@@ -69,8 +80,30 @@ class MainViewModel :
 
     fun resetProgress() {
         viewModelScope.launch {
-            preferences.setValue(PreferencesManager.DAYS_COMPLETED, 0)
+            userStatsRepository.setDaysCompleted(0)
             repository.deleteAllInfo()
         }
+    }
+
+    private suspend fun seedDebugTasksIfNeeded() {
+        if (!SEED_DEBUG_TASKS) return
+        if (repository.getArticles().first().isNotEmpty()) return
+
+        debugTasks.forEach { task ->
+            repository.upsertInfo(task)
+        }
+    }
+
+    // todo might remove it dont like it
+    private companion object {
+        const val SEED_DEBUG_TASKS = false
+
+        val debugTasks = listOf(
+            DailyTask(descriptionText = "Drink a glass of water", categoryTask = CategoryTask.Other.name),
+            DailyTask(descriptionText = "Stretch for 5 minutes", categoryTask = CategoryTask.Exercise.name),
+            DailyTask(descriptionText = "Read 10 pages", categoryTask = CategoryTask.Reading.name),
+            DailyTask(descriptionText = "Meditate for 5 minutes", categoryTask = CategoryTask.Meditating.name),
+            DailyTask(descriptionText = "Plan tomorrow in notes", categoryTask = CategoryTask.Studying.name),
+        )
     }
 }

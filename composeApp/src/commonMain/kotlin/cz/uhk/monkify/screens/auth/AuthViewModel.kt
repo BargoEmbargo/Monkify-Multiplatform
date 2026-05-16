@@ -5,6 +5,7 @@ import co.touchlab.kermit.Severity
 import cz.uhk.monkify.database.remote.FirestoreTaskRepository
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.repository.UserStatsRepository
 import cz.uhk.monkify.util.AppLog
 import dev.gitlive.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,7 @@ class AuthViewModel :
     private val firestoreTaskRepository: FirestoreTaskRepository by inject()
     private val dailyTaskRepository: DailyTaskRepository by inject()
     private val preferencesManager: PreferencesManager by inject()
+    private val userStatsRepository: UserStatsRepository by inject()
     private val log = AppLog.logger<AuthViewModel>(level = Severity.Info)
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -49,10 +51,12 @@ class AuthViewModel :
                 val userId = firebaseAuth.currentUser?.uid
                 if (userId != null) {
                     val remoteTasks = firestoreTaskRepository.getTasks(userId)
+                    dailyTaskRepository.deleteAllLocal()
                     remoteTasks.forEach { dailyTaskRepository.upsertInfo(it) }
+                    userStatsRepository.pullFromRemote()
                 }
                 _uiState.value = AuthUiState(isSuccess = true)
-                log.d { "User signed in and tasks synced" }
+                log.d { "User signed in and tasks/stats synced" }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(errorMessage = e.message)
             }
@@ -65,8 +69,9 @@ class AuthViewModel :
             try {
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                 preferencesManager.setValue(PreferencesManager.AUTHENTICATED, true)
+                userStatsRepository.syncToRemote()
                 _uiState.value = AuthUiState(isSuccess = true)
-                log.d { "User signed up" }
+                log.d { "User signed up and stats pushed" }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(errorMessage = e.message)
             }

@@ -3,10 +3,12 @@ package cz.uhk.monkify.di
 import cz.uhk.monkify.database.remote.FirestoreTaskRepository
 import cz.uhk.monkify.preferences.PreferencesManager
 import cz.uhk.monkify.repository.DailyTaskRepository
+import cz.uhk.monkify.repository.UserStatsRepository
 import cz.uhk.monkify.screens.auth.AuthViewModel
 import cz.uhk.monkify.screens.home.HomeViewModel
 import cz.uhk.monkify.screens.plan.PlanViewModel
 import cz.uhk.monkify.screens.task.TaskViewModel
+import cz.uhk.monkify.service.FirestoreSyncManager
 import cz.uhk.monkify.service.StreakManager
 import cz.uhk.monkify.viewmodel.MainViewModel
 import dev.gitlive.firebase.Firebase
@@ -35,6 +37,8 @@ val sharedModule = module {
     single<FirebaseFirestore> { Firebase.firestore }
     single { FirestoreTaskRepository(get()) }
     single { DailyTaskRepository(get(), get(), get()) }
+    single { UserStatsRepository(get(), get(), get()) }
+    single { FirestoreSyncManager(get(), get(), get(), get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
